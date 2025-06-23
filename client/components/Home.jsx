@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 function Home(){
     return (
         <>
-          <div className="homewrapper">
+          <div className="">
       <h1>Welcome to AlgoNest!!</h1>
       <p>Practice. Compete. Evolve</p>
       <Link to="/signup">Sign Up</Link> 

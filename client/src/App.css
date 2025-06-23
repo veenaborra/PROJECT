@@ -1,6 +1,1 @@
-.homewrapper{
-  display:flex;
-  align-items: center;
- flex-direction: column;
- 
-}
+@import "tailwindcss";

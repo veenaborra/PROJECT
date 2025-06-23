@@ -4,7 +4,7 @@ import User from '../models/userModel.js'
 
 const JWT_SECRET=process.env.JWT_SECRET;
 
-
+//user registration
 export const signUp=async(req,res)=>{
     try{
         const {username,email,password}=req.body;
@@ -38,7 +38,7 @@ export const signUp=async(req,res)=>{
     }
 };
 
-
+//user login
 export const logIn=async(req,res)=>{
 try{
     const {emailOrUsername,password}=req.body;
