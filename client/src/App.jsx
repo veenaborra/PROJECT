@@ -3,8 +3,7 @@ import './App.css'
 import Home from '../components/Home'
 import Login from '../components/Login'
 import Signup from '../components/Signup'
-import AdminDashBoard from '../components/AdminDashBoard'
-import UserDashBoard from '../components/UserDashBoard'
+
 
 function App() {
 
@@ -14,8 +13,7 @@ function App() {
    <Route path="/" element={<Home />}></Route>
    <Route path="/signup" element={<Signup />}></Route>
    <Route path="/login" element={<Login />}></Route>
-   <Route path="/admindashboard" element={<AdminDashBoard/>}></Route>
-   <Route path="/userdashboard"   element={<UserDashBoard />}></Route>
+ 
     </Routes>
     </BrowserRouter>
 

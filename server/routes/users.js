@@ -3,8 +3,8 @@ import { updateUser,deleteUser } from "../controllers/userController.js";
 
 const userRouter=express.Router();
 
-userRouter.patch('/users/:id',updateUser);
+userRouter.patch('/:id',updateUser);
 
-userRouter.delete('/users/:id',deleteUser)
+userRouter.delete('/:id',deleteUser)
 
 export default userRouter;

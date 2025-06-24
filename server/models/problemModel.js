@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { mongo } from "mongoose";
 
 
 
@@ -23,9 +23,11 @@ const problemSchema=new mongoose.Schema({
     },
     "tags":{
         type:[String],
+        default:[]
     },
     "points":{
         type:Number,
+        default:0
     },
     "contestId":{
         type:mongoose.Types.ObjectId,
@@ -49,3 +51,5 @@ const problemSchema=new mongoose.Schema({
     
 
 },{timestamps:true})
+const Problem=mongoose.model('Problem',problemSchema);
+export default Problem;
