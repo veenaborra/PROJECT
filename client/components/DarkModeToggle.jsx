@@ -1,27 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { LuSun, LuSunDim } from "react-icons/lu";
+import { useTheme } from '../context/Themecontext.jsx';
 
 const DarkModeToggle = () => {
-  const [isDark, setIsDark] = useState(false);
-
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-      setIsDark(true);
-    }
-  }, []);
-
-  const toggleDark = () => {
-    const newDark = !isDark;
-    setIsDark(newDark);
-    document.documentElement.classList.toggle('dark');
-    localStorage.setItem('theme', newDark ? 'dark' : 'light');
-  };
+ 
+const {theme,toggleTheme}=useTheme();
+ 
+const isDark = theme === 'dark';
 
   return (
     <button
-      onClick={toggleDark}
+      onClick={toggleTheme}
       className="px-4 py-2 bg-gray-300 dark:bg-gray-900 text-black dark:text-white rounded"
     >
       {isDark ? (
