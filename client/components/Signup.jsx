@@ -2,6 +2,7 @@ import React from "react"
 import axios from "axios"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import Dashboard from "./Dashboard.jsx"
 function Signup(){
      const [formData,setFormData]=useState({
         username:"",
@@ -30,9 +31,21 @@ const navigate=useNavigate();
         password,
     }
     try{
-        const response=await axios.post("http://localhost:8000/api/auth/signup",userData);
-        console.log("Signup successful:", response.data);
-    navigate('/login');
+        const signupresponse=await axios.post("http://localhost:8000/api/auth/signup",userData);
+        console.log("Signup successful");
+    
+       const loginresponse=await axios.post("http://localhost:8000/api/auth/login",{
+        emailOrUsername:userData.username,
+        password:userData.password
+       },{withCredentials:true});
+       
+
+       console.log("auto login successful");
+
+    navigate('/dashboard');
+
+
+
 
     }
     catch(error){
@@ -49,27 +62,55 @@ else{
 
      }
     return (
-        <>
-        <h2>Sign Up</h2>
-     <form onSubmit={handleSubmit}>
-        <input type='text' placeholder="enter your name"  name="username" value={formData.username}
-        onChange={handleChange} required/>
-        <br />
-        <input type='email' placeholder="enter your email" name="email" value={formData.email}
-        onChange={handleChange}  required/>
-        <br />
-        <input type='password' placeholder="enter your password"  name="password" value={formData.password}
-        onChange={handleChange} required/>
-        <br />
-        <input type='password' placeholder="confirm password" name="confirmPassword" value={formData.confirmPassword}
-        onChange={handleChange} required/>
-        <br />
-        
-        <br />
-        <button type="submit">Submit</button>
-
-     </form>
-        </>
+        <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="bg-white shadow-xl rounded-lg p-8 w-full max-w-md">
+          <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">Sign Up</h2>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <input
+              type="text"
+              placeholder="Enter your name"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              required
+              className="w-full px-4 border py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <input
+              type="email"
+              placeholder="Enter your email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              className="w-full px-4 border py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <input
+              type="password"
+              placeholder="Enter your password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              className="w-full px-4 border py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <input
+              type="password"
+              placeholder="Confirm password"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              required
+              className="w-full px-4  border py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition duration-300"
+            >
+              Submit
+            </button>
+          </form>
+        </div>
+      </div>
     )
 }
 export default Signup

@@ -61,10 +61,10 @@ const token=jwt.sign({
 res.cookie('token',token,{
     httpOnly: true,
     secure: false,
-    sameSite: "Strict",
+    sameSite: "Lax",
     maxAge: 24 * 60 * 60 * 1000  
 })
-res.status(200).json({ message: "Login successful" });
+res.status(200).json({ message: "Login successful ",userId:user._id,role:user.role});
 }
 
 catch(error){

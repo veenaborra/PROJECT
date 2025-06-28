@@ -1,7 +1,10 @@
 import User from "../models/userModel.js";
+//user
+export const readUser=async (req,res)=>{
+    const {userId,role}=req.user;
+res.json({role});
 
-
-
+}
 
 //updating user info
 export const updateUser=async(req,res)=>{
