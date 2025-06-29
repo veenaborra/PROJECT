@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 
 const Login = () => {
 const navigate=useNavigate();
+const {refreshUser}=useAuth();
 const [formData,setFormData]=useState({
   emailOrUsername:"",
   password:"",
@@ -32,6 +34,7 @@ try{
   const {role}=response.data;
  console.log("login successful",response.data);
  console.log("Navigating to /dashboard");
+ await refreshUser();
  navigate('/dashboard');
 
 }

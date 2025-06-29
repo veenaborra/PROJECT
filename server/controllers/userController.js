@@ -2,7 +2,8 @@ import User from "../models/userModel.js";
 //user
 export const readUser=async (req,res)=>{
     const {userId,role}=req.user;
-res.json({role});
+    console.log(req.user);
+res.json({role,userId});
 
 }
 
