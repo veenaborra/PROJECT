@@ -68,7 +68,7 @@ else{
           <form onSubmit={handleSubmit} className="space-y-4">
             <input
               type="text"
-              placeholder="Enter your name"
+              placeholder="Enter your username"
               name="username"
               value={formData.username}
               onChange={handleChange}
