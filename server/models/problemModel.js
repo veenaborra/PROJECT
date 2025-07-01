@@ -30,7 +30,7 @@ const problemSchema=new mongoose.Schema({
         default:0
     },
     "contestId":{
-        type:mongoose.Types.ObjectId,
+        type:mongoose.Schema.Types.ObjectId,
         ref:'Contest'
 
     },
@@ -46,7 +46,7 @@ const problemSchema=new mongoose.Schema({
   
     }],
     "createdBy": {
-        type:mongoose.Types.ObjectId,
+        type:mongoose.Schema.Types.ObjectId,
         ref:'User'},
     
 

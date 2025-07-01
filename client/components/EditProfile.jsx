@@ -1,16 +1,24 @@
 import React from 'react'
 import axios from 'axios'
 import { useAuth } from '../context/AuthContext'
-import { useState } from 'react';
+import { useState ,useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 export default function EditProfile() {
-    const {role,id}=useAuth();
+    const {id,username,email}=useAuth();
     const navigate=useNavigate();
     const [formData,setFormData]=useState({
       email:"",
       username:"",
      
     })
+    useEffect(() => {
+        if (email && username) {
+          setFormData({ email, username })
+        }
+      }, [email, username])
+      if (!email || !username) {
+        return <div className="text-center mt-10 text-gray-600">Loading profile...</div>; // ✅ Loading state
+      }
     const handleChange=(e)=>{
         setFormData({...formData,
             [e.target.name]:e.target.value
@@ -27,7 +35,7 @@ export default function EditProfile() {
       
       try{
         const response=await axios.patch(`http://localhost:8000/api/user/${id}`,userData,{
-          withCredentials:true,
+          withCredentials:true
         });
         const {role}=response.data;
        console.log("updated successfully",response.data);
@@ -76,7 +84,7 @@ export default function EditProfile() {
           type="submit"
           className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
         >
-          Log In
+          Update 
         </button>
       </form>
     </div>

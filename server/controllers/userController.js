@@ -2,8 +2,15 @@ import User from "../models/userModel.js";
 //user
 export const readUser=async (req,res)=>{
     const {userId,role}=req.user;
+    const user=await User.findById(userId);
+    if(!user){
+        return res.status(404).json({ message: 'User not found' });
+    }
+    const email=user.email;
+    const username=user.username;
+
     console.log(req.user);
-res.json({role,userId});
+res.json({role,userId,email,username});
 
 }
 

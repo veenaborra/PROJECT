@@ -5,7 +5,7 @@ import axios from 'axios';
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [auth, setAuth] = useState({ role: null, id: null });
+  const [auth, setAuth] = useState({ role: null, id: null ,email:null,username:null});
   const [loading, setLoading] = useState(true);
 
   const fetchUser = async () => {
@@ -14,9 +14,9 @@ export const AuthProvider = ({ children }) => {
         withCredentials: true
       });
       console.log("API RESPONSE:", res.data);
-      setAuth({ role: res.data.role, id: res.data.userId });
+      setAuth({ role: res.data.role, id: res.data.userId ,email:res.data.email,username:res.data.username});
     } catch (e) {
-      setAuth({ role: null, id: null });
+      setAuth({ role: null, id: null ,email:null,username:null});
     } finally {
       setLoading(false);
     }

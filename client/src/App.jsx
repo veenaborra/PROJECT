@@ -5,6 +5,9 @@ import Login from '../components/Login'
 import Signup from '../components/Signup'
 import Dashboard from '../components/Dashboard'
 import EditProfile from '../components/EditProfile'
+import PracticeProblems from '../components/PracticeProblems'
+import SpecificProblem from '../components/SpecificProblem'
+import RatedProblems from '../components/RatedProblems'
 
 
 function App() {
@@ -17,6 +20,9 @@ function App() {
    <Route path="/login" element={<Login />}></Route>
    <Route path="/dashboard" element={<Dashboard />}></Route>
    <Route path="/editprofile" element={<EditProfile />}></Route>
+   <Route path="/practiceproblems" element={<PracticeProblems />}></Route>
+   <Route path="/practiceproblems/:id" element={<SpecificProblem />}></Route>
+   <Route path="/ratedproblems" element={<RatedProblems />}></Route>
     </Routes>
     </BrowserRouter>
 
