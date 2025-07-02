@@ -32,14 +32,17 @@ export default function SpecificProblem() {
 
   return (
     <>
-      <NavBar />
+    
+       <NavBar />
+<div className='flex flex-row h-[70vh]'>
+   
 
-      <div className="flex h-[calc(100vh-4rem)]">
-        {/* Left: Problem Statement */}
-        <div className="w-1/2 p-6 overflow-y-auto border-r">
-          <h2 className="text-2xl font-bold mb-2">{problem.title}</h2>
-          <p className="text-sm text-gray-600 mb-4">Difficulty: {problem.difficulty}</p>
-          <pre className="whitespace-pre-wrap text-sm mb-4">{problem.description}</pre>
+       
+        <div className="w-1/2 p-6  border border-gray-500 rounded-xl mr-2">
+          <h2 className="text-2xl font-bold mb-6">Problem Title:<br /><br />{problem.title}</h2>
+          
+          <p className="text-sm text-gray-600 mb-6">Difficulty: {problem.difficulty}</p>
+          <pre className="whitespace-pre-wrap text-sm mb-4"><strong>Description:</strong><br />{problem.description}</pre>
           <div className="flex flex-wrap gap-2">
             {problem.tags?.map((tag, i) => (
               <span key={i} className="bg-gray-200 text-xs px-2 py-1 rounded">
@@ -47,10 +50,23 @@ export default function SpecificProblem() {
               </span>
             ))}
           </div>
+          <div className="mt-4">
+  <h3 className="text-lg font-semibold mb-2">Sample Test Cases:</h3>
+  {problem.testCases?.slice(0, 2).map((test, i) => (
+    <div key={i} className="mb-4 p-2 border border-gray-300 rounded bg-gray-50">
+      <p className="text-sm font-medium">Input:</p>
+      <pre className="bg-gray-700 text-white p-2 rounded border whitespace-pre-wrap">{test.input}</pre>
+
+      <p className="text-sm font-medium mt-2">Expected Output:</p>
+      <pre className="bg-gray-700 text-white p-2 rounded border whitespace-pre-wrap">{test.expectedOutput}</pre>
+    </div>
+  ))}
+</div>
+
         </div>
 
-        {/* Right: Code Editor */}
-        <div className="w-1/2 bg-gray-900 p-4">
+     
+        <div className="w-1/2 bg-gray-900 p-6 rounded-xl">
           <Editor
             height="100%"
             defaultLanguage="cpp"
@@ -58,8 +74,20 @@ export default function SpecificProblem() {
             onChange={(value) => setCode(value)}
             theme="vs-dark"
           />
+         <div className="flex gap-4">
+    <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
+      Run
+    </button>
+    <button className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">
+      Submit
+    </button>
+    <button className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">
+      Reset
+    </button>
+  </div>
         </div>
-      </div>
+        </div>
+        
     </>
   );
 }
