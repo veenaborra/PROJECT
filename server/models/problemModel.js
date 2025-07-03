@@ -45,6 +45,26 @@ const problemSchema=new mongoose.Schema({
     }
   
     }],
+
+    "inputFormat": {
+        type: String,
+        default: '',
+      },
+      "outputFormat": {
+        type: String,
+        default: '',
+      },
+      "constraints": {
+        type: [String],
+        default: [],
+      },
+
+      "examples": [
+        {
+          "input": { type: String, required: true },
+          "output": { type: String, required: true },
+        },
+      ],
     "createdBy": {
         type:mongoose.Schema.Types.ObjectId,
         ref:'User'},

@@ -17,14 +17,23 @@ const navigate=useNavigate();
 <nav className="bg-blue-600 text-white px-4 py-3 flex justify-between items-center mb-2">
     <h1 className='text-xl font-bold'>AlgoNest</h1>
     <div className='space-x-4'>
+   
+    {role==="user" && (
+      <>
 <Link to="/practiceproblems" className='hover:underline' >Practice</Link>
 <Link to="/ratedproblems" className='hover:underline' >Rated</Link>
+</>
+)
+}
+
 {role === 'admin' && (
-            <Link to="/admin/users" className="hover:underline">Manage Users</Link>
+             <Link to='/admin/manageproblems' className='hover:underline'>Manage Problems</Link>
+
+         
           )}
 <ProfileDropdown />
-
 </div>
+
 
 </nav>
   )

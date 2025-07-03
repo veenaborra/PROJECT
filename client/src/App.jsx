@@ -9,6 +9,8 @@ import PracticeProblems from '../components/PracticeProblems'
 import SpecificProblem from '../components/SpecificProblem'
 import RatedProblems from '../components/RatedProblems'
 
+import ManageProblems from '../components/ManageProblems'
+
 
 function App() {
 
@@ -23,6 +25,7 @@ function App() {
    <Route path="/practiceproblems" element={<PracticeProblems />}></Route>
    <Route path="/practiceproblems/:id" element={<SpecificProblem />}></Route>
    <Route path="/ratedproblems" element={<RatedProblems />}></Route>
+   <Route path='/admin/manageproblems' element={<ManageProblems />}></Route>
     </Routes>
     </BrowserRouter>
 

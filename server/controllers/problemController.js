@@ -5,7 +5,19 @@ import Problem from "../models/problemModel.js";
 //create problems
 export const createProblem=async(req,res)=>{
     try{
-    const {title,description,difficulty,tags,points,contestId,testCases}=req.body;
+        const {
+            title,
+            description,
+            difficulty,
+            tags,
+            points,
+            contestId,
+            testCases,
+            inputFormat,
+            outputFormat,
+            constraints,
+            examples
+          } = req.body;
 
     const {userId,role}=req.user;
    
@@ -15,7 +27,7 @@ export const createProblem=async(req,res)=>{
 
    
 
-    const newProblem= new Problem({
+      const newProblem = new Problem({
         title,
         description,
         difficulty,
@@ -23,8 +35,13 @@ export const createProblem=async(req,res)=>{
         points,
         contestId,
         testCases,
-        createdBy:userId,
-    })
+        inputFormat,
+        outputFormat,
+        constraints,
+        examples,
+        createdBy: userId,
+      });
+      
 
     await newProblem.save();
     res.status(201).json({message:"saved problem sucessfully!",
