@@ -20,10 +20,16 @@ const submissionSchema=new mongoose.Schema({
     language:{
         type:String,
         enum:[cpp,python],
+        required:true
     },
-    status:{
+    filePath:{
         type:String,
-        enum: ["Accepted", "Wrong Answer", "Time Limit Exceeded", "Runtime Error"],
+        required:true,
+    },
+    result:{
+        type:String,
+        default:"Pending",
+        enum: ["Pending","Accepted", "Wrong Answer", "Time Limit Exceeded", "Runtime Error"],
         required: true,
     },
     submittedAt: {
@@ -31,10 +37,12 @@ const submissionSchema=new mongoose.Schema({
         default: Date.now,
       },
       executionTime: {
-        type: Number,ms
+        type: Number,//ms
+        default:"null"
       },
       memoryUsed: {
-        type: Number,kb
+        type: Number,//kb
+        default:"null"
       },
     });
     
