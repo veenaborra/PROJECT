@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import Editor from '@monaco-editor/react';
 import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
 
 export default function ProblemEditor({ problem }) {
+  const {id}=useAuth();
   const [code, setCode] = useState('// Write your code here');
   const [customInput, setCustomInput] = useState('');
   const [output, setOutput] = useState('');
@@ -30,13 +32,30 @@ export default function ProblemEditor({ problem }) {
   };
 
   const handleSubmit = async () => {
-    const expected = problem?.testCases?.[0]?.expectedOutput?.trim();
-    const result = output?.trim();
-    const isCorrect = result === expected;
-
-    setVerdict(isCorrect ? 'Accepted' : 'Wrong Answer');
+    try{
+    const userId=id;
+    const res = await axios.post('http://localhost:8000/api/submit', {
+      code,
+      language,
+      userId,
+      problemId: problem._id,
+    },{withCredentials:true});
+    const { result, failedTest } = res.data;
+    if (result === 'Accepted') {
+      setVerdict('Accepted');
+    } else {
+      setVerdict(
+        `Wrong Answer on Test Case #${failedTest?.index + 1}`
+      );
+    }
     setActiveTab('verdict');
-  };
+  }
+  catch (err) {
+    setVerdict(err.response?.data?.error || 'Submission error.');
+    setActiveTab('verdict');
+  }
+};
+
 
   const handleReset = () => {
     setCode('// Write your code here');

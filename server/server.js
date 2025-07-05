@@ -6,14 +6,14 @@ import authRouter from './routes/auth.js';
 import problemsRouter from './routes/problems.js';
 import userRouter from './routes/users.js';
 import cookieParser from 'cookie-parser';
-
+import submitRouter from './routes/submit.js';
 dotenv.config();
 
 
 const app=express();
 app.use(cookieParser());
 app.use(cors({
-    origin:"http://localhost:5173",
+    origin:["http://localhost:5173",'http://localhost:8000'],
     credentials:true,
 }));
 
@@ -23,6 +23,7 @@ app.use(express.json());
 app.use('/api/auth',authRouter);
 app.use('/api/user',userRouter);
 app.use('/api/problems',problemsRouter);
+app.use('/api',submitRouter);
 
 const port=process.env.PORT;
 

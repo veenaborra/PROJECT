@@ -8,6 +8,7 @@ import cors from 'cors'
 
 
 
+
 const app=express();
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
@@ -24,7 +25,7 @@ app.get('/',(req,res)=>{
 res.send("hello world")
 })
 
-
+//run
 app.post('/run',async(req,res)=>{
     const {code,language='cpp',input}=req.body;
    if(code===undefined){
@@ -39,6 +40,52 @@ app.post('/run',async(req,res)=>{
         res.status(500).json({success:false,error:error.message});
     }
 })
+
+
+
+//submit
+app.post('/submit',async(req,res)=>{
+    const {language,code,testcases}=req.body;
+    try{
+        const filePath=generateFile(language,code);
+        let result='Accepted';
+        let output = '';
+        let failedTest = null;
+
+        for (let i = 0; i < testcases.length; i++) {
+            const inputPath = await generateInputFile(testcases[i].input);
+            const execResult = await executeCpp(filePath, inputPath);
+      console.log(filePath,inputPath)
+            const actual = execResult ? execResult.trim() : '';
+            const expected = testcases[i].expectedOutput.trim();
+      
+            if (actual !== expected) {
+              result = 'Wrong Answer';
+              output = actual;
+              failedTest = {
+                index: i,
+                input: testcases[i].input,
+                expected,
+                actual
+              };
+              break;
+            }
+          }
+          res.json({ filePath, result, output, failedTest });
+
+
+    }
+    catch (err) {
+        res.status(500).json({ error: 'Execution error', details: err.message });
+      }
+
+})
+
+
+
+
+
+
 
 
 
