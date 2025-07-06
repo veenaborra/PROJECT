@@ -38,8 +38,19 @@ const submission = await Submission.create({
 
   }
   catch (err) {
-    console.error(' Submit Route Error:', err);
-    res.status(500).json({ error: 'Compiler error or DB failure',details:err.message });
+   if(err.response){
+    //compiler error
+    console.log(err.response);
+    return res.status(500).json({
+      error:"Compiler Error",
+      details:err.response.data?.details || err.message
+    })
+   }
+   else{
+    return res.status(500).json({
+      error:"Internal server error"
+    })
+   }
   }
 
 

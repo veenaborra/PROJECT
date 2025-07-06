@@ -36,9 +36,12 @@ app.post('/run',async(req,res)=>{
    const inputFilePath=await generateInputFile(input);
    const output=await executeCpp(filePath,inputFilePath);
    res.json({filePath,inputFilePath,output})}
-    catch(error){
-        res.status(500).json({success:false,error:error.message});
-    }
+   catch (error) {
+    res.status(500).json({
+      error: 'Compiler Error',
+      details: error.stderr || error.message || 'Unknown compiler error'
+    });
+  }
 })
 
 
@@ -76,7 +79,8 @@ app.post('/submit',async(req,res)=>{
 
     }
     catch (err) {
-        res.status(500).json({ error: 'Execution error', details: err.message });
+      console.log("compiler error :",err.stderr)
+        res.status(500).json({ error: 'Execution error', details: err.stderr || "unkonown compiler failure" });
       }
 
 })

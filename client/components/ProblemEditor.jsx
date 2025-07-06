@@ -12,13 +12,20 @@ export default function ProblemEditor({ problem }) {
   const [activeTab, setActiveTab] = useState('input'); // input | output | verdict
   const [language] = useState('cpp');
 
+
+
   const handleRun = async () => {
     try {
+      // if(code.includes("cin>>") && !customInput){
+      // setOutput("No input");
+      // setActiveTab('output');
+      // return;
+      // }
       const res = await axios.post(
         'http://localhost:8080/run',
         {
           code,
-          input: customInput,
+          input: customInput || "",
           language,
         },
         { withCredentials: true }
@@ -26,8 +33,9 @@ export default function ProblemEditor({ problem }) {
       setOutput(res.data.output || '');
       setActiveTab('output');
     } catch (err) {
-      setOutput(err.response?.data?.error || 'Error occurred.');
+      setOutput(err.response?.data?.details|| 'Compiler error.');
       setActiveTab('output');
+    
     }
   };
 
@@ -51,8 +59,14 @@ export default function ProblemEditor({ problem }) {
     setActiveTab('verdict');
   }
   catch (err) {
-    setVerdict(err.response?.data?.error || 'Submission error.');
-    setActiveTab('verdict');
+    console.log(err.response.data.details);
+      const isCompilerError = err.response?.data?.error === 'Compiler Error';
+      const message = isCompilerError
+        ? err.response?.data?.details :
+        'Internal Server Error';
+        console.log(message);
+      setVerdict(message);
+      setActiveTab('verdict');
   }
 };
 
@@ -119,13 +133,13 @@ export default function ProblemEditor({ problem }) {
           <pre className="whitespace-pre-wrap">{output || 'No output yet.'}</pre>
         )}
         {activeTab === 'verdict' && (
-          <span
+          <pre
             className={`font-semibold ${
               verdict === 'Accepted' ? 'text-green-600' : 'text-red-600'
             }`}
           >
             {verdict || 'Not evaluated yet.'}
-          </span>
+          </pre>
         )}
       </div>
     </div>
