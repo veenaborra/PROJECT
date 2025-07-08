@@ -18,20 +18,31 @@ const navigate=useNavigate();
     <h1 className='text-xl font-bold'>AlgoNest</h1>
     <div className='space-x-4'>
    
+   {
+    !id && (
+      <>
+      <Link to="/login" className="hover:underline">Login</Link>
+      <Link to="/signup" className="hover:underline">Register</Link>
+      </>
+    )
+   }
     {role==="user" && (
       <>
 <Link to="/practiceproblems" className='hover:underline' >Practice</Link>
 <Link to="/ratedproblems" className='hover:underline' >Rated</Link>
+<ProfileDropdown />
 </>
 )
 }
 
 {role === 'admin' && (
+  <>
              <Link to='/admin/manageproblems' className='hover:underline'>Manage Problems</Link>
-
-         
-          )}
 <ProfileDropdown />
+         
+       </>   )}
+        
+
 </div>
 
 

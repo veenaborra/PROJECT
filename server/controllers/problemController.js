@@ -60,6 +60,16 @@ catch(error){
 }
 }
 
+//get all problems
+export const getAllProblems=async(req,res)=>{
+    try{
+        const allProblems=await Problem.find();
+        res.status(200).json({problems:allProblems});
+    }
+    catch(error){
+        res.status(500).json({ error: err.message });
+    }
+}
 //get practice problems
 
 export const getAllPracticeProblems=async(req,res)=>{
@@ -68,7 +78,7 @@ try{
     res.json({practiceProblems})
 }
 catch(error){
-    res.status(500).json({ error: err.message });
+   res.status(500).json({ error: err.message });
 }
 }
 

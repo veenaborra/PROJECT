@@ -19,13 +19,20 @@ const outputFilename=`${jobId}.out`
 const outPath=path.join(outputPath,outputFilename);
 
 return new Promise((resolve,reject)=>{
-    exec(`g++ ${filePath} -o ${outPath} &&  ${outPath} < ${inputFilePath}` ,(error,stdout,stderr)=>{
+    exec(`g++ ${filePath} -o ${outPath} &&  ${outPath} < ${inputFilePath}` ,{timeout:5000},(error,stdout,stderr)=>{
         if(error){
-            reject({error,stderr});
+           return  reject({
+                killed:error.killed,
+                code:error.code,
+                stderr,
+                message:error.message,
+                type:"execution_err"
+            });
         }
          if(stderr){
-            reject({stderr});
+           return  reject({stderr,type:"std_err"});
          }
+         
          resolve(stdout);
     })
 })

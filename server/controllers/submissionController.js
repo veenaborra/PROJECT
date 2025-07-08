@@ -19,42 +19,40 @@ const testcases=problem.testCases;
 
 const compilerRes=await axios.post('http://localhost:8080/submit',{code,language,testcases});
 
-const {result,filePath,failedTest}=compilerRes.data;
+const {result,filePath,failedTests}=compilerRes.data;
 const submission = await Submission.create({
     userId,
     problemId,
     language,
     filePath,
     result,
-    failedTestCases:failedTest,
+    failedTestCases:failedTests,
   });
 
   res.status(201).json({
     success: true,
     message: 'Submission stored',
     result,
-    failedTest
+    failedTests
   });
 
   }
   catch (err) {
-   if(err.response){
-    //compiler error
-    console.log(err.response);
-    return res.status(500).json({
-      error:"Compiler Error",
-      details:err.response.data?.details || err.message
-    })
-   }
-   else{
-    return res.status(500).json({
-      error:"Internal server error"
-    })
-   }
-  }
+    if (err.response && err.response.data) {
+      const { error, details } = err.response.data;
 
+      return res.status(err.response.status || 500).json({
+        error: error || 'Compiler Error',
+        details: details || 'Something went wrong during code execution.'
+      });
+    }
+    console.error('Server Error:', err.message);
+    return res.status(500).json({
+      error: 'Internal Server Error',
+      details: err.message || 'Unknown server error.'
+    });
 
-}
+}}
 
 
 export default Submit;

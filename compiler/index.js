@@ -14,10 +14,10 @@ app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 
 dotenv.config();
-const port=process.env.PORT;
+const port=process.env.PORT||8080;
 
 app.use(cors({
-    origin:"http://localhost:5173",
+    origin:["http://localhost:5173","http://localhost:8000"],
     credentials:true,
 }));
 
@@ -51,9 +51,10 @@ app.post('/submit',async(req,res)=>{
     const {language,code,testcases}=req.body;
     try{
         const filePath=generateFile(language,code);
-        let result='Accepted';
+        
         let output = '';
-        let failedTest = null;
+        let failedTests=[];
+       
 
         for (let i = 0; i < testcases.length; i++) {
             const inputPath = await generateInputFile(testcases[i].input);
@@ -61,28 +62,53 @@ app.post('/submit',async(req,res)=>{
       console.log(filePath,inputPath)
             const actual = execResult ? execResult.trim() : '';
             const expected = testcases[i].expectedOutput.trim();
-      
+     
             if (actual !== expected) {
-              result = 'Wrong Answer';
-              output = actual;
-              failedTest = {
+             
+              failedTests.push({
                 index: i,
                 input: testcases[i].input,
                 expected,
                 actual
-              };
-              break;
+              });
+            
             }
           }
-          res.json({ filePath, result, output, failedTest });
+          const result =failedTests.length === 0 ? 'Accepted' : 'Wrong Answer';
+          res.json({ filePath, result, output, failedTests});
 
 
     }
     catch (err) {
-      console.log("compiler error :",err.stderr)
-        res.status(500).json({ error: 'Execution error', details: err.stderr || "unkonown compiler failure" });
+      // Handling timeout (from exec's { timeout: 5000 } option)
+      if (err.type === "execution_err" && err.killed) {
+        return res.status(408).json({
+          error: "Time Limit Exceeded",
+          details: "Your code took too long to execute."
+        });}
+    
+      // Handling compiler errors
+      if (err.stderr  && err.code !== 0) {
+        return res.status(400).json({ 
+          error: 'Compiler Error', 
+          details: err.stderr 
+        });
       }
+    
+       // Handling other execution errors
+  if (err.type === "std_err") {
+    return res.status(500).json({
+      error: "Execution Error",
+      details: err.stderr || "Unknown execution error"
+    });
+  }
+  return res.status(500).json({
+    error: "Unknown Error",
+    details: err.message || "An unexpected error occurred"
+  });
+     
 
+}
 })
 
 

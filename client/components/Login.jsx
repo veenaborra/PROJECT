@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import NavBar from '../layout/NavBar'
 
 
 const Login = () => {
@@ -54,6 +55,8 @@ console.log("axios error:",error.message);
 
 
   return (
+    <>
+<NavBar></NavBar>
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
     <div className="max-w-md w-full bg-white shadow-md rounded-xl p-8 space-y-6">
       <h2 className="text-2xl font-bold text-center text-gray-800">Log In</h2>
@@ -85,6 +88,7 @@ console.log("axios error:",error.message);
       </form>
     </div>
   </div>
+  </>
   )
 }
 

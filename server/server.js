@@ -13,7 +13,7 @@ dotenv.config();
 const app=express();
 app.use(cookieParser());
 app.use(cors({
-    origin:["http://localhost:5173",'http://localhost:8000'],
+    origin:["http://localhost:5173",'http://localhost:8080'],
     credentials:true,
 }));
 

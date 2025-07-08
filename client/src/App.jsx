@@ -10,6 +10,7 @@ import SpecificProblem from '../components/SpecificProblem'
 import RatedProblems from '../components/RatedProblems'
 
 import ManageProblems from '../components/ManageProblems'
+import HomePage from '../Pages/HomePage'
 
 
 function App() {
@@ -17,7 +18,7 @@ function App() {
   return (
     <BrowserRouter>
     <Routes>
-   <Route path="/" element={<Home />}></Route>
+   <Route path="/" element={<HomePage />}></Route>
    <Route path="/signup" element={<Signup />}></Route>
    <Route path="/login" element={<Login />}></Route>
    <Route path="/dashboard" element={<Dashboard />}></Route>

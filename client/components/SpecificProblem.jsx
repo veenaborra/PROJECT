@@ -15,9 +15,7 @@ export default function SpecificProblem() {
   useEffect(() => {
     const fetchProblem = async () => {
       try {
-        const res = await axios.get(`http://localhost:8000/api/problems/${id}`, {
-          withCredentials: true,
-        });
+        const res = await axios.get(`http://localhost:8000/api/problems/${id}`);
         setProblem(res.data);
       } catch (error) {
         console.error("Error fetching problem:", error);
