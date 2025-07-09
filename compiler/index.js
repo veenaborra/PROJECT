@@ -3,6 +3,7 @@ import dotenv from 'dotenv'
 import generateFile from './generateFile.js';
 import executeCpp from './executeCpp.js';
 import generateInputFile from './generateInputFile.js';
+import generateAiResponse from './generateAiResponse.js';
 import cors from 'cors'
 
 
@@ -14,7 +15,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 
 dotenv.config();
-const port=process.env.PORT||8080;
+const port=process.env.PORT;
 
 app.use(cors({
     origin:["http://localhost:5173","http://localhost:8000"],
@@ -50,6 +51,7 @@ app.post('/run',async(req,res)=>{
 app.post('/submit',async(req,res)=>{
     const {language,code,testcases}=req.body;
     try{
+
         const filePath=generateFile(language,code);
         
         let output = '';
@@ -109,6 +111,25 @@ app.post('/submit',async(req,res)=>{
      
 
 }
+})
+
+//ai review
+
+app.post('/ai-review',async(req,res)=>{
+  const {code,title,description,constraints}=req.body;
+  if (code === undefined) {
+    return res.status(404).json({ success: false, error: "Empty code!PLease provide some code to review" });
+}
+  try{
+const aiResponse=await generateAiResponse(code,title,description,constraints);
+res.json({
+  success:true,
+  aiResponse
+})
+  }
+  catch(err){
+console.log("error executing code:",err.message)
+  }
 })
 
 

@@ -3,8 +3,10 @@ import Editor from '@monaco-editor/react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
 
 export default function ProblemEditor({ problem }) {
+  console.log(problem);
   const navigate = useNavigate();
   const { id } = useAuth();
   const [code, setCode] = useState('// Write your code here');
@@ -13,6 +15,32 @@ export default function ProblemEditor({ problem }) {
   const [verdict, setVerdict] = useState('');
   const [activeTab, setActiveTab] = useState('input');
   const [language] = useState('cpp');
+  const [aiReview,setAiReview]=useState("")
+
+
+  const handleAiReview=async()=>{
+    if (!id) {
+      navigate('/login');
+      return;
+    }
+    try{
+      const res=await axios.post("http://localhost:8080/ai-review",{code,
+      title:problem?.title||"",
+      description:problem?.description|| "",
+      constraints:problem.constraints || ""},
+      {withCredentials:true});
+      const { aiResponse } = res.data;
+      setAiReview(aiResponse || 'No feedback provided.');
+      setActiveTab('ai-review');
+    }
+    catch(err){
+      console.log(err.response);
+      const message =
+      err.response?.data?.error || 'Failed to fetch AI review. Check backend config.';
+    setAiReview(message);
+    setActiveTab('ai-review');
+    }
+  }
 
   const handleRun = async () => {
     if (!id) {
@@ -114,13 +142,16 @@ export default function ProblemEditor({ problem }) {
         <button className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded" onClick={handleSubmit}>
           Submit
         </button>
+        <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded" onClick={handleAiReview}>
+    AI Review
+  </button>
         <button className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded" onClick={handleReset}>
           Reset
         </button>
       </div>
 
       <div className="flex gap-2 mb-2">
-        {['input', 'output', 'verdict'].map((tab) => (
+        {['input', 'output', 'verdict','ai-review'].map((tab) => (
           <button
             key={tab}
             className={`px-4 py-2 rounded capitalize ${
@@ -168,6 +199,9 @@ export default function ProblemEditor({ problem }) {
             )}
           </div>
         )}
+        {activeTab === 'ai-review' && (
+  <pre className="whitespace-pre-wrap text-gray-800">{<ReactMarkdown>{aiReview}</ReactMarkdown>|| 'No AI feedback yet.'}</pre>
+)}
       </div>
     </div>
   );
