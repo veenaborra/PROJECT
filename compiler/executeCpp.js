@@ -20,21 +20,57 @@ const outPath=path.join(outputPath,outputFilename);
 
 return new Promise((resolve,reject)=>{
     exec(`g++ ${filePath} -o ${outPath} &&  ${outPath} < ${inputFilePath}` ,{timeout:5000},(error,stdout,stderr)=>{
-        if(error){
-           return  reject({
-                killed:error.killed,
-                code:error.code,
-                stderr,
-                message:error.message,
-                type:"execution_err"
-            });
-        }
-         if(stderr){
-           return  reject({stderr,type:"std_err"});
-         }
-         
-         resolve(stdout);
-    })
+        const cleanedStderr = (stderr || "").replace(/\/.*\/codes\/.*?\.cpp/g, 'main.cpp');
+        
+  if (error) {
+    console.error("Execution error:", error.message);
+
+    if (error.killed && error.signal === 'SIGTERM' ){
+        // Time Limit Exceeded)
+        return reject({
+            type: "time_limit_exceeded",
+            message: "Execution timed out",
+            details: "Execution timed out. Your code took too long to run.", 
+        });
+    }
+
+    if (stderr && error.code !== 0) {
+        // Compilation failed
+      
+        return reject({
+            type: "compiler_error",
+           stderr,
+            message: "Compilation failed",
+            details: cleanedStderr, 
+        });
+    }
+
+    // Other execution errors
+    return reject({
+        type: "execution_err",
+     stderr: cleanedStderr,
+        message: error.message,
+        details: cleanedStderr|| error.message || "An unexpected runtime error occurred.", // Provide a more useful detail
+    });
+}
+
+// Edge case: some programs output to stderr even if no error (e.g., warnings treated as errors)
+if (stderr) {
+   
+    return reject({
+        type: "std_err", 
+        stderr,
+        message: "Program produced output to stderr.",
+        details: cleanedStderr, 
+    });
+}
+fs.unlink(outPath, (unlinkErr) => {
+    if (unlinkErr) {
+        console.error(`Failed to delete ${outPath}:`, unlinkErr.message);
+    
+    }})
+resolve(stdout);
+});
 })
 }
 export default executeCpp;

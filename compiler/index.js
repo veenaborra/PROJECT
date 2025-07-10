@@ -5,12 +5,16 @@ import executeCpp from './executeCpp.js';
 import generateInputFile from './generateInputFile.js';
 import generateAiResponse from './generateAiResponse.js';
 import cors from 'cors'
+import { authMiddleware } from './authMiddleware.js';
+import cookieParser from 'cookie-parser';
+import fs from 'fs/promises'
 
 
 
 
 
 const app=express();
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 
@@ -32,18 +36,57 @@ app.post('/run',async(req,res)=>{
    if(code===undefined){
     return res.status(400).json({success:false,Error:"empty code body"});
    }
+   let inputFilePath;
    try{
    const filePath=generateFile(language,code);
-   const inputFilePath=await generateInputFile(input);
+   inputFilePath=await generateInputFile(input);
    const output=await executeCpp(filePath,inputFilePath);
-   res.json({filePath,inputFilePath,output})}
-   catch (error) {
-    res.status(500).json({
-      error: 'Compiler Error',
-      details: error.stderr || error.message || 'Unknown compiler error'
+   return res.json({output})
+   }
+  catch (err) {
+    
+    if (err.type === "time_limit_exceeded") {
+        return res.status(408).json({ 
+            error: err.message, 
+            details: err.details,
+        });
+    }
+
+    if (err.type === "compiler_error") {
+        return res.status(400).json({
+            error: err.message,
+            details: err.details,
+        });
+    }
+
+    if (err.type === "execution_err") {
+        return res.status(500).json({
+            error: err.message,
+            details: err.details,
+        });
+    }
+
+    if (err.type === "std_err") {
+        return res.status(500).json({
+            error: err.message,
+            details: err.details,
+        });
+    }
+
+   
+    return res.status(500).json({
+        error: "An unexpected error occurred on the server.",
+        details:"Internal Server Error",
     });
+}
+finally{
+  try{
+    await fs.unlink(inputFilePath);
   }
-})
+  catch(err){
+    console.error("file cleanup failed :",err.message);
+  }
+} });
 
 
 
@@ -83,17 +126,17 @@ app.post('/submit',async(req,res)=>{
     }
     catch (err) {
       // Handling timeout (from exec's { timeout: 5000 } option)
-      if (err.type === "execution_err" && err.killed) {
+      if (err.type === "time_limit_exceeded") {
         return res.status(408).json({
           error: "Time Limit Exceeded",
           details: "Your code took too long to execute."
-        });}
-    
+        });
+      }
       // Handling compiler errors
       if (err.stderr  && err.code !== 0) {
         return res.status(400).json({ 
           error: 'Compiler Error', 
-          details: err.stderr 
+          details: err.details 
         });
       }
     
@@ -101,9 +144,16 @@ app.post('/submit',async(req,res)=>{
   if (err.type === "std_err") {
     return res.status(500).json({
       error: "Execution Error",
-      details: err.stderr || "Unknown execution error"
+      details: err.details || "Unknown execution error"
     });
   }
+  if (err.type === "execution_err") {
+    return res.status(500).json({
+      error: "Execution Error",
+      details: err.details|| "Runtime error during code execution"
+    });
+  }
+
   return res.status(500).json({
     error: "Unknown Error",
     details: err.message || "An unexpected error occurred"
@@ -115,7 +165,7 @@ app.post('/submit',async(req,res)=>{
 
 //ai review
 
-app.post('/ai-review',async(req,res)=>{
+app.post('/ai-review',authMiddleware,async(req,res)=>{
   const {code,title,description,constraints}=req.body;
   if (code === undefined) {
     return res.status(404).json({ success: false, error: "Empty code!PLease provide some code to review" });
@@ -131,11 +181,6 @@ res.json({
 console.log("error executing code:",err.message)
   }
 })
-
-
-
-
-
 
 
 

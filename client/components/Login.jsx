@@ -3,11 +3,15 @@ import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import NavBar from '../layout/NavBar'
+import { useLocation } from 'react-router-dom'
+
 
 
 const Login = () => {
 const navigate=useNavigate();
 const {refreshUser}=useAuth();
+const location = useLocation();
+const from = location.state?.from || '/dashboard'; 
 const [formData,setFormData]=useState({
   emailOrUsername:"",
   password:"",
@@ -36,7 +40,11 @@ try{
  console.log("login successful",response.data);
  console.log("Navigating to /dashboard");
  await refreshUser();
- navigate('/dashboard');
+
+
+
+
+ navigate(from, { replace: true });
 
 }
 catch(error){
@@ -85,6 +93,15 @@ console.log("axios error:",error.message);
         >
           Log In
         </button>
+        <p className="text-center text-sm">
+              Don't have an account?{' '}
+              <span
+                className="text-blue-600 underline cursor-pointer"
+                onClick={() => navigate('/signup')}
+              >
+                Sign Up
+              </span>
+              </p>
       </form>
     </div>
   </div>

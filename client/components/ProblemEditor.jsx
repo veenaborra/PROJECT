@@ -1,28 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
+import { useLocation } from 'react-router-dom';
+
 
 export default function ProblemEditor({ problem }) {
   console.log(problem);
   const navigate = useNavigate();
-  const { id } = useAuth();
-  const [code, setCode] = useState('// Write your code here');
+  const location = useLocation();
+  const { id } = useAuth(); 
   const [customInput, setCustomInput] = useState('');
   const [output, setOutput] = useState('');
   const [verdict, setVerdict] = useState('');
-  const [activeTab, setActiveTab] = useState('input');
+  const [activeTab, setActiveTab] = useState('Input');
   const [language] = useState('cpp');
   const [aiReview,setAiReview]=useState("")
+  const [runLoading, setRunLoading] = useState(false);
+  const [verdictLoading, setVerdictLoading] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [code, setCode] = useState(() => {
+    return localStorage.getItem('unsavedCode') || '// Write your code here';
+  });
+
+  useEffect(() => {
+    localStorage.removeItem('unsavedCode'); 
+  }, [code]);
+  
+ 
+  const Spinner = () => (
+    <div className="flex items-center justify-center h-full">
+   <div className="h-8 w-8 border-4 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
+
+    </div>
+  );
+  
 
 
   const handleAiReview=async()=>{
     if (!id) {
-      navigate('/login');
-      return;
+      localStorage.setItem('unsavedCode', code);
+      navigate('/login', { state: { from: location.pathname } });
+       return;      
     }
+    setAiLoading(true);
     try{
       const res=await axios.post("http://localhost:8080/ai-review",{code,
       title:problem?.title||"",
@@ -31,22 +54,26 @@ export default function ProblemEditor({ problem }) {
       {withCredentials:true});
       const { aiResponse } = res.data;
       setAiReview(aiResponse || 'No feedback provided.');
-      setActiveTab('ai-review');
+      setActiveTab('AI Review');
     }
     catch(err){
       console.log(err.response);
       const message =
       err.response?.data?.error || 'Failed to fetch AI review. Check backend config.';
     setAiReview(message);
-    setActiveTab('ai-review');
+    setActiveTab('AI Review');
+    }
+    finally {
+      setAiLoading(false);
     }
   }
 
   const handleRun = async () => {
     if (!id) {
-      navigate('/login');
+      navigate('/login', { state: { from: location.pathname } });
       return;
     }
+    setRunLoading(true);
     try {
       const res = await axios.post(
         'http://localhost:8080/run',
@@ -58,18 +85,22 @@ export default function ProblemEditor({ problem }) {
         { withCredentials: true }
       );
       setOutput(res.data.output || '');
-      setActiveTab('output');
+      setActiveTab('Output');
     } catch (err) {
       setOutput(err.response?.data?.details || 'Unknown error while running the code.');
-      setActiveTab('output');
+      setActiveTab('Output');
+    }
+    finally {
+      setRunLoading(false);
     }
   };
 
   const handleSubmit = async () => {
     if (!id) {
-      navigate('/login');
+      navigate('/login', { state: { from: location.pathname } });
       return;
     }
+    setVerdictLoading(true);
     try {
       const userId = id;
       const res = await axios.post(
@@ -91,27 +122,14 @@ export default function ProblemEditor({ problem }) {
         const failedNumbers = failedTests.map((test) => test.index + 1);
         setVerdict(failedNumbers);
       }
-      setActiveTab('verdict');
+      setActiveTab('Verdict');
     } catch (err) {
-      const errorType = err.response?.data?.error || 'Unknown Error';
       const details = err.response?.data?.details || 'Something went wrong. Please try again.';
-
-      let message = '';
-
-      if (errorType === 'Compiler Error') {
-        message = `Compiler Error:\n${details}`;
-      } else if (errorType === 'Time Limit Exceeded') {
-        message = `Time Limit Exceeded:\nYour code took too long to execute.`;
-      } else if (errorType === 'Execution Error') {
-        message = `Runtime Error:\n${details}`;
-      } else if (errorType === 'Internal Server Error') {
-        message = `Internal Server Error:\n${details}`;
-      } else {
-        message = `Unexpected Error:\n${details}`;
-      }
-
-      setVerdict(message);
-      setActiveTab('verdict');
+      setVerdict(details);
+      setActiveTab('Verdict');
+    }
+    finally {
+      setVerdictLoading(false);
     }
   };
 
@@ -120,10 +138,11 @@ export default function ProblemEditor({ problem }) {
     setCustomInput('');
     setOutput('');
     setVerdict('');
-    setActiveTab('input');
+    setActiveTab('Input');
   };
 
   if (!problem) return <p>Problem not loaded.</p>;
+ 
 
   return (
     <div className="lg:w-1/2 bg-white shadow-md rounded-xl p-6 overflow-y-auto max-h-[85vh]">
@@ -151,7 +170,7 @@ export default function ProblemEditor({ problem }) {
       </div>
 
       <div className="flex gap-2 mb-2">
-        {['input', 'output', 'verdict','ai-review'].map((tab) => (
+        {['Input', 'Output', 'Verdict','AI Review'].map((tab) => (
           <button
             key={tab}
             className={`px-4 py-2 rounded capitalize ${
@@ -165,7 +184,7 @@ export default function ProblemEditor({ problem }) {
       </div>
 
       <div className="bg-gray-100 p-4 rounded h-40 overflow-y-auto">
-        {activeTab === 'input' && (
+        {activeTab === 'Input' && (
           <textarea
             className="w-full h-full bg-white p-2 rounded border resize-none"
             value={customInput}
@@ -173,10 +192,17 @@ export default function ProblemEditor({ problem }) {
             placeholder="Enter custom input..."
           />
         )}
-        {activeTab === 'output' && (
-          <pre className="whitespace-pre-wrap">{output || 'No output yet.'}</pre>
-        )}
-        {activeTab === 'verdict' && (
+       {activeTab === 'Output' && (
+   runLoading ? (
+    <Spinner />
+  )  : (
+    <pre className="whitespace-pre-wrap">{output || 'No output yet.'}</pre>
+  )
+)}
+        {activeTab === 'Verdict' && (
+           verdictLoading ? (
+            <Spinner />
+          ) :(
           <div>
             {verdict === 'Accepted' ? (
               <p className="text-green-600 font-semibold">Accepted</p>
@@ -197,11 +223,22 @@ export default function ProblemEditor({ problem }) {
             ) : (
               <pre className="text-red-600 whitespace-pre-wrap">{verdict}</pre>
             )}
-          </div>
+          </div>)
         )}
-        {activeTab === 'ai-review' && (
-  <pre className="whitespace-pre-wrap text-gray-800">{<ReactMarkdown>{aiReview}</ReactMarkdown>|| 'No AI feedback yet.'}</pre>
+       {activeTab === 'AI Review' && (
+  aiLoading ? (
+    <Spinner />
+  ) : (
+    aiReview ? (
+      <div className="whitespace-pre-wrap text-gray-800">
+        <ReactMarkdown>{aiReview}</ReactMarkdown>
+      </div>
+    ) : (
+      <p>No AI feedback yet.</p>
+    )
+  )
 )}
+
       </div>
     </div>
   );

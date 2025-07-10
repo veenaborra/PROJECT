@@ -8,9 +8,8 @@ import EditProfile from '../components/EditProfile'
 import PracticeProblems from '../components/PracticeProblems'
 import SpecificProblem from '../components/SpecificProblem'
 import RatedProblems from '../components/RatedProblems'
-
 import ManageProblems from '../components/ManageProblems'
-import HomePage from '../Pages/HomePage'
+import ExplorePage from '../Pages/ExplorePage'
 
 
 function App() {
@@ -18,7 +17,8 @@ function App() {
   return (
     <BrowserRouter>
     <Routes>
-   <Route path="/" element={<HomePage />}></Route>
+    {/* <Route path="/" element={<Home />}></Route> */}
+   <Route path="/" element={<ExplorePage />}></Route>
    <Route path="/signup" element={<Signup />}></Route>
    <Route path="/login" element={<Login />}></Route>
    <Route path="/dashboard" element={<Dashboard />}></Route>

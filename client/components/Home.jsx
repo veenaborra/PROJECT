@@ -1,8 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import NavBar from "../layout/NavBar";
+
 
 function Home() {
   return (
+    <>
+    <NavBar></NavBar>
     <div className="min-h-screen flex flex-col bg-white transition-colors duration-300 px-4">
      
 
@@ -32,7 +36,7 @@ function Home() {
         </div>
       </main>
     </div>
-  );
+    </> );
 }
 
 export default Home;
