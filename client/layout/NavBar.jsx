@@ -15,8 +15,8 @@ const navigate=useNavigate();
   return (
 
 <nav className="bg-blue-600 text-white px-4 py-3 flex justify-between items-center mb-2">
-    <h1 className='text-xl font-bold'>AlgoNest</h1>
-    <div className='space-x-4'>
+<Link to="/" className="text-xl font-bold hover:underline">AlgoNest</Link>
+    <div className='space-x-4 flex items-center'>
    
    {
     !id && (

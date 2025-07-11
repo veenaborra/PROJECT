@@ -9,16 +9,16 @@ import PracticeProblems from '../components/PracticeProblems'
 import SpecificProblem from '../components/SpecificProblem'
 import RatedProblems from '../components/RatedProblems'
 import ManageProblems from '../components/ManageProblems'
-import ExplorePage from '../Pages/ExplorePage'
+
 
 
 function App() {
-
+  
   return (
     <BrowserRouter>
     <Routes>
-    {/* <Route path="/" element={<Home />}></Route> */}
-   <Route path="/" element={<ExplorePage />}></Route>
+    <Route path="/" element={<Home />}></Route>
+ 
    <Route path="/signup" element={<Signup />}></Route>
    <Route path="/login" element={<Login />}></Route>
    <Route path="/dashboard" element={<Dashboard />}></Route>

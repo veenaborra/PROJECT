@@ -19,7 +19,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 
 dotenv.config();
-const port=process.env.PORT;
+const port=process.env.PORT || 8080;
 
 app.use(cors({
     origin:["http://localhost:5173","http://localhost:8000"],
@@ -44,7 +44,7 @@ app.post('/run',async(req,res)=>{
    return res.json({output})
    }
   catch (err) {
-    
+    console.log(err.type,err.message);
     if (err.type === "time_limit_exceeded") {
         return res.status(408).json({ 
             error: err.message, 
