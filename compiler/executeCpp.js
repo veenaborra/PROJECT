@@ -19,7 +19,7 @@ const outputFilename=`${jobId}.out`
 const outPath=path.join(outputPath,outputFilename);
 
 return new Promise((resolve,reject)=>{
-    exec(`g++ ${filePath} -o ${outPath} &&  ${outPath} < ${inputFilePath}` ,{timeout:5000},(error,stdout,stderr)=>{
+    exec(`g++ ${filePath} -o ${outPath} &&  ${outPath} < ${inputFilePath}` ,{timeout:3000},(error,stdout,stderr)=>{
         const cleanedStderr = (stderr || "").replace(/\/.*\/codes\/.*?\.cpp/g, 'main.cpp');
         
   if (error) {
@@ -36,7 +36,14 @@ return new Promise((resolve,reject)=>{
 
     if (stderr && error.code !== 0) {
         // Compilation failed
-      
+        if (cleanedStderr.includes("undefined reference to `main'")) {
+            return reject({
+                type: "compiler_error",
+                stderr,
+                message: "Missing main function",
+                details: "Your code must contain a 'main' function as the entry point.",
+            });
+        }
         return reject({
             type: "compiler_error",
            stderr,
@@ -64,11 +71,7 @@ if (stderr) {
         details: cleanedStderr, 
     });
 }
-fs.unlink(outPath, (unlinkErr) => {
-    if (unlinkErr) {
-        console.error(`Failed to delete ${outPath}:`, unlinkErr.message);
-    
-    }})
+
 resolve(stdout);
 });
 })

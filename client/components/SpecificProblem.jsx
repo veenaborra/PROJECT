@@ -76,9 +76,9 @@ export default function SpecificProblem() {
             {problem.examples?.map((ex, i) => (
               <div key={i} className="bg-gray-100 p-2 my-2 rounded border">
                 <p className="text-xs font-medium">Input:</p>
-                <pre className="bg-gray-800 text-white p-2 rounded mb-1">{ex.input}</pre>
+                <pre className="bg-gray-200 text-black p-2 rounded mb-1">{ex.input}</pre>
                 <p className="text-xs font-medium">Output:</p>
-                <pre className="bg-gray-800 text-white p-2 rounded">{ex.output}</pre>
+                <pre className="bg-gray-200 text-black p-2 rounded">{ex.output}</pre>
               </div>
             ))}
           </div>

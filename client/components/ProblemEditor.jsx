@@ -27,7 +27,7 @@ export default function ProblemEditor({ problem }) {
 
   useEffect(() => {
     localStorage.removeItem('unsavedCode'); 
-  }, [code]);
+  }, [id]);
   
  
   const Spinner = () => (
@@ -47,7 +47,7 @@ export default function ProblemEditor({ problem }) {
     }
     setAiLoading(true);
     try{
-      const res=await axios.post("http://localhost:8080/ai-review",{code,
+      const res=await axios.post("http://localhost:8080/ai-review",{
       title:problem?.title||"",
       description:problem?.description|| "",
       constraints:problem.constraints || ""},
@@ -59,7 +59,7 @@ export default function ProblemEditor({ problem }) {
     catch(err){
       console.log(err.response);
       const message =
-      err.response?.data?.error || 'Failed to fetch AI review. Check backend config.';
+      err.response?.data?.error || 'Failed to fetch AI review.';
     setAiReview(message);
     setActiveTab('AI Review');
     }

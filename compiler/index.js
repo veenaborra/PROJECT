@@ -8,6 +8,8 @@ import cors from 'cors'
 import { authMiddleware } from './authMiddleware.js';
 import cookieParser from 'cookie-parser';
 import fs from 'fs/promises'
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 
 
@@ -29,24 +31,34 @@ app.use(cors({
 app.get('/',(req,res)=>{
 res.send("hello world")
 })
+const __filename = fileURLToPath(import.meta.url); 
+const __dirname = path.dirname(__filename);   
 
+const outputPath=path.join(__dirname,"outputs");
 //run
-app.post('/run',async(req,res)=>{
+app.post('/run',authMiddleware,async(req,res)=>{
+  
     const {code,language='cpp',input}=req.body;
    if(code===undefined){
-    return res.status(400).json({success:false,Error:"empty code body"});
+    return res.status(400).json({success:false,details:"empty code body"});
    }
    let inputFilePath;
+   let outPath;
    try{
    const filePath=generateFile(language,code);
+   const jobId=path.basename(filePath).split(".")[0];
+   const outputFilename=`${jobId}.out`
+   outPath=path.join(outputPath,outputFilename);
+
    inputFilePath=await generateInputFile(input);
    const output=await executeCpp(filePath,inputFilePath);
+   
    return res.json({output})
    }
   catch (err) {
     console.log(err.type,err.message);
     if (err.type === "time_limit_exceeded") {
-        return res.status(408).json({ 
+        return res.status(504).json({ 
             error: err.message, 
             details: err.details,
         });
@@ -81,7 +93,8 @@ app.post('/run',async(req,res)=>{
 }
 finally{
   try{
-    await fs.unlink(inputFilePath);
+   if(inputFilePath) await fs.unlink(inputFilePath);
+    if (outPath) await fs.unlink(outPath);
   }
   catch(err){
     console.error("file cleanup failed :",err.message);
@@ -93,18 +106,25 @@ finally{
 //submit
 app.post('/submit',async(req,res)=>{
     const {language,code,testcases}=req.body;
+    let filePath;
+  let outPath;
+  const inputPaths = [];
     try{
 
-        const filePath=generateFile(language,code);
-        
+         filePath=generateFile(language,code);
+         const jobId = path.basename(filePath).split(".")[0];
+         const outputFilename = `${jobId}.out`;
+         const outputPath=path.join(__dirname,"outputs");
+         outPath = path.join(outputPath, outputFilename);
+         
         let output = '';
         let failedTests=[];
        
 
         for (let i = 0; i < testcases.length; i++) {
             const inputPath = await generateInputFile(testcases[i].input);
+            inputPaths.push(inputPath);
             const execResult = await executeCpp(filePath, inputPath);
-      console.log(filePath,inputPath)
             const actual = execResult ? execResult.trim() : '';
             const expected = testcases[i].expectedOutput.trim();
      
@@ -161,6 +181,16 @@ app.post('/submit',async(req,res)=>{
      
 
 }
+finally {
+  try {
+    for (const inputPath of inputPaths) {
+      await fs.unlink(inputPath);
+    }
+    if (outPath) await fs.unlink(outPath); 
+  } catch (cleanupErr) {
+    console.error("File cleanup failed:", cleanupErr.message);
+  }
+}
 })
 
 //ai review
@@ -168,7 +198,7 @@ app.post('/submit',async(req,res)=>{
 app.post('/ai-review',authMiddleware,async(req,res)=>{
   const {code,title,description,constraints}=req.body;
   if (code === undefined) {
-    return res.status(404).json({ success: false, error: "Empty code!PLease provide some code to review" });
+    return res.status(404).json({ success: false, error: "Empty code! Please provide some code to review" });
 }
   try{
 const aiResponse=await generateAiResponse(code,title,description,constraints);
@@ -179,8 +209,11 @@ res.json({
   }
   catch(err){
 console.log("error executing code:",err.message)
+return res.status(500).json({ success: false, error: "Failed to get AI review response" });
+}
+
   }
-})
+)
 
 
 
