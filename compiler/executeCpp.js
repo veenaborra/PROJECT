@@ -44,6 +44,7 @@ return new Promise((resolve,reject)=>{
                 details: "Your code must contain a 'main' function as the entry point.",
             });
         }
+    
         return reject({
             type: "compiler_error",
            stderr,

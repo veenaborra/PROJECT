@@ -47,7 +47,7 @@ export default function ProblemEditor({ problem }) {
     }
     setAiLoading(true);
     try{
-      const res=await axios.post("http://localhost:8080/ai-review",{
+      const res=await axios.post("http://localhost:8080/ai-review",{code,
       title:problem?.title||"",
       description:problem?.description|| "",
       constraints:problem.constraints || ""},

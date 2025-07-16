@@ -44,8 +44,9 @@ app.post('/run',authMiddleware,async(req,res)=>{
    }
    let inputFilePath;
    let outPath;
+   let filePath;
    try{
-   const filePath=generateFile(language,code);
+    filePath=generateFile(language,code);
    const jobId=path.basename(filePath).split(".")[0];
    const outputFilename=`${jobId}.out`
    outPath=path.join(outputPath,outputFilename);
@@ -58,7 +59,7 @@ app.post('/run',authMiddleware,async(req,res)=>{
   catch (err) {
     console.log(err.type,err.message);
     if (err.type === "time_limit_exceeded") {
-        return res.status(504).json({ 
+        return res.status(422).json({ 
             error: err.message, 
             details: err.details,
         });
@@ -95,6 +96,7 @@ finally{
   try{
    if(inputFilePath) await fs.unlink(inputFilePath);
     if (outPath) await fs.unlink(outPath);
+    if(filePath) await fs.unlink(filePath);
   }
   catch(err){
     console.error("file cleanup failed :",err.message);
@@ -147,7 +149,7 @@ app.post('/submit',async(req,res)=>{
     catch (err) {
       // Handling timeout (from exec's { timeout: 5000 } option)
       if (err.type === "time_limit_exceeded") {
-        return res.status(408).json({
+        return res.status(422).json({
           error: "Time Limit Exceeded",
           details: "Your code took too long to execute."
         });

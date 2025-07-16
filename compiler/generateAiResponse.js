@@ -5,27 +5,23 @@ import dotenv from 'dotenv'
 dotenv.config();
 const ai = new GoogleGenAI({apiKey:process.env.GOOGLE_GEMINIAI_API});
 const generateAiResponse=async(code,description,title,constraints)=>{
-    const prompt = `
-    Analyze the following programming problem and code. Be professional and concise.
+    const prompt =`You are an AI code reviewer. Analyze the following programming problem and the submitted code.
+
+    Instructions:
+    - If the code contains errors, explain them clearly and give helpful hints to fix them (do not provide the full solution).
+    - If the code is correct, suggest concise improvements for performance, readability, or best practices.
+    - Format your response using clean, professional Markdown (as rendered by react-markdown).
+    - Use bullet points or sections if needed, but avoid unnecessary spacing or headings unless they help clarity.
     
-    If the code contains errors, give helpful hints to fix them (do not provide the full solution).
-    If the code is correct, suggest concise performance or readability improvements.
-    Format the response using Markdown (the output will be rendered with react-markdown).
-    Avoid unnecessary spacing or line breaks in the output.
-   
+    Problem Title: ${title}
     
-    Title:
-    ${title}
+    Description: ${description}
     
-    Description:
-    ${description}
-    
-    Constraints:
-    ${constraints}
+    Constraints: ${constraints}
     
     Code:
-    ${code}
-    `;
+    ${code}`
+    ;
     const response = await ai.models.generateContent({
         model: "gemini-2.0-flash",
         contents: prompt,
