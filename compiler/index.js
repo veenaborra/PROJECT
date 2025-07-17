@@ -112,7 +112,7 @@ app.post('/submit',async(req,res)=>{
   let outPath;
   const inputPaths = [];
     try{
-
+      const startTime = Date.now();
          filePath=generateFile(language,code);
          const jobId = path.basename(filePath).split(".")[0];
          const outputFilename = `${jobId}.out`;
@@ -122,11 +122,13 @@ app.post('/submit',async(req,res)=>{
         let output = '';
         let failedTests=[];
        
-
+      
         for (let i = 0; i < testcases.length; i++) {
             const inputPath = await generateInputFile(testcases[i].input);
             inputPaths.push(inputPath);
+        
             const execResult = await executeCpp(filePath, inputPath);
+          
             const actual = execResult ? execResult.trim() : '';
             const expected = testcases[i].expectedOutput.trim();
      
@@ -141,24 +143,31 @@ app.post('/submit',async(req,res)=>{
             
             }
           }
+          const endTime = Date.now();
+          const executionTime = endTime - startTime;
+          console.log(executionTime);
           const result =failedTests.length === 0 ? 'Accepted' : 'Wrong Answer';
-          res.json({ filePath, result, output, failedTests});
+          console.log(filePath,result);
+          res.json({ filePath, result, output, failedTests,executionTime});
 
 
     }
     catch (err) {
       // Handling timeout (from exec's { timeout: 5000 } option)
+      const executionTime = Date.now() - startTime;
       if (err.type === "time_limit_exceeded") {
         return res.status(422).json({
           error: "Time Limit Exceeded",
-          details: "Your code took too long to execute."
+          details: "Your code took too long to execute.",
+          executionTime
         });
       }
       // Handling compiler errors
       if (err.stderr  && err.code !== 0) {
         return res.status(400).json({ 
           error: 'Compiler Error', 
-          details: err.details 
+          details: err.details ,
+          executionTime
         });
       }
     
@@ -172,13 +181,15 @@ app.post('/submit',async(req,res)=>{
   if (err.type === "execution_err") {
     return res.status(500).json({
       error: "Execution Error",
-      details: err.details|| "Runtime error during code execution"
+      details: err.details|| "Runtime error during code execution",
+      executionTime
     });
   }
 
   return res.status(500).json({
     error: "Unknown Error",
-    details: err.message || "An unexpected error occurred"
+    details: err.message || "An unexpected error occurred",
+    executionTime
   });
      
 

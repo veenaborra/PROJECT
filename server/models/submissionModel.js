@@ -42,10 +42,10 @@ const submissionSchema=new mongoose.Schema({
         type: Date,
         default: Date.now,
       },
-    //   executionTime: {
-    //     type: Number,//ms
-    //     default:"null"
-    //   },
+       executionTime: {
+        type: Number,//ms
+        default:null
+     },
     //   memoryUsed: {
     //     type: Number,//kb
     //     default:"null"

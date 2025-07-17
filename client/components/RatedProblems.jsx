@@ -9,7 +9,7 @@ const [loading,setLoading]=useState(true);
 const navigate=useNavigate();
 
 const handleRowClick=(id)=>{
-navigate(`/practiceproblems/${id}`);
+navigate(`/${id}`);
 }
 
 useEffect(()=>{

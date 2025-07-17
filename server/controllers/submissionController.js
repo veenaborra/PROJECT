@@ -1,9 +1,12 @@
+import mongoose from "mongoose";
 import Problem from "../models/problemModel.js";
 import Submission from "../models/submissionModel.js";
 import axios from 'axios';
 
- const Submit=async(req,res)=>{
-    const {code,language,userId,problemId}=req.body;
+ export const Submit=async(req,res)=>{
+    const {code,language,problemId}=req.body;
+    const {userId }= req.user; 
+    console.log(userId);
 
 if (!code || !userId || !problemId) {
     return res.status(400).json({ error: 'Missing fields' });
@@ -19,7 +22,9 @@ const testcases=problem.testCases;
 
 const compilerRes=await axios.post('http://localhost:8080/submit',{code,language,testcases});
 
-const {result,filePath,failedTests}=compilerRes.data;
+const {result,filePath,failedTests,executionTime}=compilerRes.data;
+console.log('Compiler response:', compilerRes.data);
+
 const submission = await Submission.create({
     userId,
     problemId,
@@ -27,6 +32,7 @@ const submission = await Submission.create({
     filePath,
     result,
     failedTestCases:failedTests,
+    executionTime
   });
 
   res.status(201).json({
@@ -55,4 +61,32 @@ const submission = await Submission.create({
 }}
 
 
-export default Submit;
+export const Submissions=async(req,res)=>{
+try{
+  const userId = req.userId;
+  console.log(userId);
+  const submissions = await Submission.find( {userId})
+      .sort({ submittedAt: -1 })
+      .populate({
+        path: 'problemId',
+        select: 'title _id',
+      });
+      
+      const formatted = submissions.map((s) => ({
+        _id: s._id,
+        language: s.language,
+        status: s.result,
+        executionTime: s.executionTime,
+        createdAt: s.submittedAt,
+        problemTitle: s.problemId?.title || 'Unknown',
+        problemId: s.problemId?._id || null,
+      }));
+      console.log(formatted);
+      res.json({ submissions: formatted });
+}
+catch(err){
+  console.error('Error fetching submissions:', err);
+  res.status(500).json({ error: 'Failed to fetch submissions.' })
+}
+}
+

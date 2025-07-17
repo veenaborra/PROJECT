@@ -26,10 +26,14 @@ const navigate=useNavigate();
       </>
     )
    }
+      {(role === "user" || role === "admin") && (
+  <Link to="/submissions" className="hover:underline">Submissions</Link>
+)}
     {role==="user" && (
       <>
 <Link to="/practiceproblems" className='hover:underline' >Practice</Link>
 <Link to="/ratedproblems" className='hover:underline' >Rated</Link>
+
 <ProfileDropdown />
 </>
 )
@@ -41,6 +45,9 @@ const navigate=useNavigate();
 <ProfileDropdown />
          
        </>   )}
+    
+
+
         
 
 </div>

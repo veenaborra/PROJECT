@@ -108,7 +108,6 @@ export default function ProblemEditor({ problem }) {
         {
           code,
           language,
-          userId,
           problemId: problem._id,
         },
         { withCredentials: true }
