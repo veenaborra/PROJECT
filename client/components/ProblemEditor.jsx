@@ -7,7 +7,7 @@ import ReactMarkdown from 'react-markdown';
 import { useLocation } from 'react-router-dom';
 
 
-export default function ProblemEditor({ problem }) {
+export default function ProblemEditor({ problem ,submissionId}) {
   console.log(problem);
   const navigate = useNavigate();
   const location = useLocation();
@@ -22,8 +22,42 @@ export default function ProblemEditor({ problem }) {
   const [verdictLoading, setVerdictLoading] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
   const [code, setCode] = useState(() => {
-    return localStorage.getItem('unsavedCode') || '// Write your code here';
+    return submissionId ? '' : (localStorage.getItem('unsavedCode') || '// Write your code here');
   });
+  
+
+
+  useEffect(() => {
+    const fetchSubmittedCode = async () => {
+      if (!submissionId) return;
+  
+      try {
+        
+        const submissionRes = await axios.get(
+          `http://localhost:8000/api/submissions/${submissionId}`,
+          { withCredentials: true }
+        );
+  
+        const submission = submissionRes.data;
+        const filePath = submission.filePath;
+        console.log(filePath);
+  
+     
+        const codeRes = await axios.get(
+          `http://localhost:8080/code?path=${encodeURIComponent(filePath)}`,
+          { withCredentials: true }
+        );
+  
+        setCode(codeRes.data.code || '// Submitted code not found.');
+       
+      } catch (err) {
+        console.error('Failed to fetch submitted code:', err.message);
+      }
+    };
+  
+    fetchSubmittedCode();
+  }, [submissionId]);
+  
 
   useEffect(() => {
     localStorage.removeItem('unsavedCode'); 

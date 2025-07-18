@@ -27,7 +27,11 @@ const navigate=useNavigate();
     )
    }
       {(role === "user" || role === "admin") && (
+        <>
+         <Link to="/dashboard" className='hover:underline'>Home</Link>
   <Link to="/submissions" className="hover:underline">Submissions</Link>
+ 
+  </>
 )}
     {role==="user" && (
       <>

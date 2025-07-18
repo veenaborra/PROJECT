@@ -4,12 +4,17 @@ import Editor from "@monaco-editor/react";
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import ProblemEditor from './ProblemEditor';
+import { useSearchParams } from 'react-router-dom';
+
 
 
 export default function SpecificProblem() {
   const { id } = useParams();
   const [problem, setProblem] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [searchParams] = useSearchParams();
+const submissionId = searchParams.get('submission');
+
   
 
   useEffect(() => {
@@ -85,7 +90,7 @@ export default function SpecificProblem() {
 
          
         </div>
-        <ProblemEditor  problem={problem} />
+        <ProblemEditor  problem={problem}  submissionId={submissionId}/>
     
 
       </div>

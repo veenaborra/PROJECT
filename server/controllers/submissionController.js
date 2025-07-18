@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import Problem from "../models/problemModel.js";
 import Submission from "../models/submissionModel.js";
+import User from "../models/userModel.js";
 import axios from 'axios';
 
  export const Submit=async(req,res)=>{
@@ -20,21 +21,42 @@ if (!code || !userId || !problemId) {
 const testcases=problem.testCases;
 
 
-const compilerRes=await axios.post('http://localhost:8080/submit',{code,language,testcases});
+const compilerRes=await axios.post('http://localhost:8080/submit',{code,language,testcases},{headers: {
+  'x-internal-token': process.env.INTERNAL_SECRET,
+},
+  withCredentials:true,
+});
 
-const {result,filePath,failedTests,executionTime}=compilerRes.data;
+const {result,relativePath,failedTests,executionTime}=compilerRes.data;
 console.log('Compiler response:', compilerRes.data);
 
 const submission = await Submission.create({
     userId,
     problemId,
     language,
-    filePath,
+    filePath:relativePath,
     result,
     failedTestCases:failedTests,
     executionTime
   });
 
+  if (problem.points > 0 && result === 'Accepted') {
+    
+    const alreadySolved = await Submission.findOne({
+      userId,
+      problemId,
+      result: 'Accepted',
+      _id: { $ne: submission._id }
+    });
+  
+    if (!alreadySolved) {
+
+    await User.findByIdAndUpdate(userId, {
+        $inc: { rating: problem.points },
+      });
+     
+    }
+  }
   res.status(201).json({
     success: true,
     message: 'Submission stored',
@@ -90,3 +112,17 @@ catch(err){
 }
 }
 
+export const specificSubmission=async(req,res)=>{
+  try{
+    const {id}=req.params;
+const submission=await Submission.findById(id);
+if(!submission){
+  return res.status(404).json({ message: 'submission not found' });
+}
+res.status(200).json(submission);
+}
+catch(error){
+  console.error("Error in specificSubmission:", error.message);
+    res.status(500).json({ message: 'Error fetching submission', error: error.message });
+}
+}

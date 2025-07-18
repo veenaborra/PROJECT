@@ -27,6 +27,10 @@ const userSchema=new mongoose.Schema({
         type:Date,
         default:Date.now(),
     },
+    rating:{
+        type:Number,
+        default:0
+    }
    
     
 

@@ -54,7 +54,16 @@ useEffect(()=>{
   {problems.map((problem) => (
     <tr key={problem._id} onClick={()=>{handleRowClick(problem._id)}}className="hover:bg-gray-50">
       <td className="p-2 border-b">{problem.title}</td>
-      <td className="p-2 border-b">{problem.difficulty}</td>
+      <td className={`p-2 border-b font-semibold ${
+  problem.difficulty === 'Easy'
+    ? 'text-green-600'
+    : problem.difficulty === 'Medium'
+    ? 'text-yellow-600'
+    : 'text-red-500'
+}`}>
+  {problem.difficulty}
+</td>
+
       <td className="p-2 border-b">
         {problem.tags?.map((tag, index) => (
           <span

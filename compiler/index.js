@@ -106,14 +106,23 @@ finally{
 
 
 //submit
-app.post('/submit',async(req,res)=>{
+app.post('/submit',(req, res, next) => {
+  const token = req.headers['x-internal-token'];
+  if (token !== process.env.INTERNAL_SECRET) {
+    return res.status(401).json({ error: 'Unauthorized internal access' });
+  }
+  next();
+},async(req,res)=>{
     const {language,code,testcases}=req.body;
-    let filePath;
+    let filePath,relativePath;
   let outPath;
   const inputPaths = [];
+  const startTime = Date.now();
     try{
-      const startTime = Date.now();
+    
          filePath=generateFile(language,code);
+         relativePath = path.relative(path.join(__dirname, 'codes'), filePath); 
+        
          const jobId = path.basename(filePath).split(".")[0];
          const outputFilename = `${jobId}.out`;
          const outputPath=path.join(__dirname,"outputs");
@@ -147,8 +156,8 @@ app.post('/submit',async(req,res)=>{
           const executionTime = endTime - startTime;
           console.log(executionTime);
           const result =failedTests.length === 0 ? 'Accepted' : 'Wrong Answer';
-          console.log(filePath,result);
-          res.json({ filePath, result, output, failedTests,executionTime});
+          console.log(relativePath,result);
+          res.json({ relativePath, result, output, failedTests,executionTime});
 
 
     }
@@ -228,6 +237,31 @@ return res.status(500).json({ success: false, error: "Failed to get AI review re
   }
 )
 
+//code
+
+app.get('/code',authMiddleware, async (req, res) => {
+  try {
+    const relativePath = req.query.path;
+
+    if (!relativePath) {
+      return res.status(400).json({ error: 'Missing file path' });
+    }
+
+    const codesDir = path.join(__dirname, 'codes');
+    const fullPath = path.normalize(path.join(codesDir, relativePath));
+
+   
+    if (!fullPath.startsWith(codesDir)) {
+      return res.status(403).json({ error: 'Unauthorized access' });
+    }
+
+    const code = await fs.readFile(fullPath, 'utf-8');
+    res.json({ code });
+  } catch (err) {
+    console.error('Error reading code file:', err.message);
+    res.status(500).json({ error: 'Could not read code file' });
+  }
+});
 
 
 
