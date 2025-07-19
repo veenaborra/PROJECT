@@ -168,7 +168,8 @@ app.post('/submit',(req, res, next) => {
         return res.status(422).json({
           error: "Time Limit Exceeded",
           details: "Your code took too long to execute.",
-          executionTime
+          executionTime,
+          relativePath
         });
       }
       // Handling compiler errors
@@ -176,29 +177,32 @@ app.post('/submit',(req, res, next) => {
         return res.status(400).json({ 
           error: 'Compiler Error', 
           details: err.details ,
-          executionTime
+          executionTime,
+          relativePath
         });
       }
     
        // Handling other execution errors
   if (err.type === "std_err") {
     return res.status(500).json({
-      error: "Execution Error",
-      details: err.details || "Unknown execution error"
+      error: "RunTime Error",
+      details: err.details || "Unknown execution error",
+      relativePath
     });
   }
   if (err.type === "execution_err") {
     return res.status(500).json({
-      error: "Execution Error",
+      error: "RunTime Error",
       details: err.details|| "Runtime error during code execution",
-      executionTime
+      executionTime,relativePath
     });
   }
 
   return res.status(500).json({
     error: "Unknown Error",
     details: err.message || "An unexpected error occurred",
-    executionTime
+    executionTime,
+    relativePath
   });
      
 

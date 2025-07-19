@@ -21,9 +21,10 @@ export default function ProblemEditor({ problem ,submissionId}) {
   const [runLoading, setRunLoading] = useState(false);
   const [verdictLoading, setVerdictLoading] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
-  const [code, setCode] = useState(() => {
-    return submissionId ? '' : (localStorage.getItem('unsavedCode') || '// Write your code here');
-  });
+  const [code, setCode] = useState(() => { return submissionId ? '' : (localStorage.getItem('unsavedCode') || '// Write your code here');
+   });
+   const [initialCode, setInitialCode] = useState('');
+
   
 
 
@@ -49,6 +50,7 @@ export default function ProblemEditor({ problem ,submissionId}) {
         );
   
         setCode(codeRes.data.code || '// Submitted code not found.');
+        setInitialCode(codeRes.data.code || '// Submitted code not found.');
        
       } catch (err) {
         console.error('Failed to fetch submitted code:', err.message);
@@ -79,6 +81,7 @@ export default function ProblemEditor({ problem ,submissionId}) {
       navigate('/login', { state: { from: location.pathname } });
        return;      
     }
+    setActiveTab('AI Review');
     setAiLoading(true);
     try{
       const res=await axios.post("http://localhost:8080/ai-review",{code,
@@ -104,9 +107,11 @@ export default function ProblemEditor({ problem ,submissionId}) {
 
   const handleRun = async () => {
     if (!id) {
+      localStorage.setItem('unsavedCode', code);
       navigate('/login', { state: { from: location.pathname } });
       return;
     }
+    setActiveTab('Output'); 
     setRunLoading(true);
     try {
       const res = await axios.post(
@@ -128,15 +133,16 @@ export default function ProblemEditor({ problem ,submissionId}) {
       setRunLoading(false);
     }
   };
-
   const handleSubmit = async () => {
     if (!id) {
+      localStorage.setItem('unsavedCode', code);
       navigate('/login', { state: { from: location.pathname } });
       return;
     }
+    setActiveTab('Verdict'); 
     setVerdictLoading(true);
+  
     try {
-      const userId = id;
       const res = await axios.post(
         'http://localhost:8000/api/submit',
         {
@@ -146,28 +152,33 @@ export default function ProblemEditor({ problem ,submissionId}) {
         },
         { withCredentials: true }
       );
-      console.log(res);
-      const { result, failedTests } = res.data;
-
+  
+      const { result, failedTests, details } = res.data;
+  
       if (result === 'Accepted') {
         setVerdict('Accepted');
-      } else {
+      } else if (details) {
+      
+        setVerdict(details);
+      } else if (failedTests?.length) {
         const failedNumbers = failedTests.map((test) => test.index + 1);
-        setVerdict(failedNumbers);
+        setVerdict(`Wrong Answer on testcases: ${failedNumbers.join(', ')}`);
+      } else {
+        setVerdict('Wrong Answer');
       }
+  
       setActiveTab('Verdict');
     } catch (err) {
-      const details = err.response?.data?.details || 'Something went wrong. Please try again.';
-      setVerdict(details);
-      setActiveTab('Verdict');
-    }
-    finally {
+      setOutput(err.response?.data?.details || 'Unknown error while running the code.');
+      setActiveTab('Output');
+    } finally {
       setVerdictLoading(false);
     }
   };
+  
 
   const handleReset = () => {
-    setCode('// Write your code here');
+    setCode(submissionId ? initialCode : '// Write your code here');
     setCustomInput('');
     setOutput('');
     setVerdict('');

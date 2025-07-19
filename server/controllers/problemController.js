@@ -11,7 +11,6 @@ export const createProblem=async(req,res)=>{
             difficulty,
             tags,
             points,
-            contestId,
             testCases,
             inputFormat,
             outputFormat,
@@ -25,7 +24,10 @@ export const createProblem=async(req,res)=>{
         return res.status(403).json({ error: 'Only admins can create problems.' });
       }
 
-   
+      const existing = await Problem.findOne({ title });
+      if (existing) {
+        return res.status(400).json({ error: 'Problem with this title already exists' });
+      }
 
       const newProblem = new Problem({
         title,
@@ -33,7 +35,6 @@ export const createProblem=async(req,res)=>{
         difficulty,
         tags,
         points,
-        contestId,
         testCases,
         inputFormat,
         outputFormat,
@@ -112,26 +113,44 @@ export const getSpecificProblem=async(req,res)=>{
 
 //update a problem
 
-export const updateProblem=async(req,res)=>{
-    try{
-        const {id}=req.params;
-        const {role}=req.user;
-        if(role!="admin"){
-            return res.status(403).json({ error: 'Forbidden: Admins only' })
-        }
-       const updatedProblem=await Problem.findByIdAndUpdate(id,req.body,{
-        new:true,
-        runValidators:true
-       })
-       res.json({message:"updated successfully",
-        updatedproblem:updatedProblem
-       })
-    }
-    catch(error){
-        console.log('error updating problem');
-        res.status(500).json({message:'Error updating problem:',error:error.message})
-    }
-}
+
+     
+          export const updateProblem = async (req, res) => {
+            try {
+              const { id } = req.params;
+              const { role } = req.user;
+              const { title } = req.body;
+          
+              if (role !== "admin") {
+                return res.status(403).json({ error: 'Forbidden: Admins only' });
+              }
+          
+              if (!title) {
+                return res.status(400).json({ error: 'Title is required' });
+              }
+          
+              const existing = await Problem.findOne({ title });
+          
+              if (existing && existing._id.toString() !== id) {
+                return res.status(400).json({ error: 'Another problem with this title already exists' });
+              }
+          
+              const updatedProblem = await Problem.findByIdAndUpdate(id, req.body, {
+                new: true,
+                runValidators: true
+              });
+          
+              res.json({
+                message: "Updated successfully",
+                updatedproblem: updatedProblem
+              });
+          
+            } catch (error) {
+              console.error('Error updating problem:', error); // log full error
+              res.status(500).json({ message: 'Error updating problem', error: error.message });
+            }
+          };
+          
 
 //delete a problem
 

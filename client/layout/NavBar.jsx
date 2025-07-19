@@ -26,30 +26,24 @@ const navigate=useNavigate();
       </>
     )
    }
-      {(role === "user" || role === "admin") && (
-        <>
-         <Link to="/dashboard" className='hover:underline'>Home</Link>
-  <Link to="/submissions" className="hover:underline">Submissions</Link>
- 
-  </>
-)}
-    {role==="user" && (
-      <>
-<Link to="/practiceproblems" className='hover:underline' >Practice</Link>
-<Link to="/ratedproblems" className='hover:underline' >Rated</Link>
-
-<ProfileDropdown />
-</>
-)
-}
+  {role === 'user' && (
+          <>
+            <Link to="/dashboard" className="hover:underline">Home</Link>
+            <Link to="/practiceproblems" className="hover:underline">Practice</Link>
+            <Link to="/ratedproblems" className="hover:underline">Rated</Link>
+            <Link to="/submissions" className="hover:underline">Submissions</Link>
+            <ProfileDropdown />
+          </>
+        )}
 
 {role === 'admin' && (
-  <>
-             <Link to='/admin/manageproblems' className='hover:underline'>Manage Problems</Link>
-<ProfileDropdown />
-         
-       </>   )}
-    
+          <>
+            <Link to="/admin" className="hover:underline">Home</Link>
+            <Link to="/admin/manageproblems" className="hover:underline">Manage Problems</Link>
+            <Link to="/admin/allsubmissions" className="hover:underline">All Submissions</Link>
+            <ProfileDropdown />
+          </>
+        )}
 
 
         
