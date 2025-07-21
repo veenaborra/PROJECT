@@ -8,6 +8,7 @@ const Login = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const { refreshUser } = useAuth()
+  const [error, setError] = useState('');
 
   const [formData, setFormData] = useState({
     emailOrUsername: '',
@@ -37,29 +38,44 @@ const Login = () => {
       const { role } = response.data
       await refreshUser()
 
-      const fallbackRoute = role === 'admin' ? '/admin' : '/dashboard'
+      const fallbackRoute = role === 'admin' ? '/admin/dashboard' : '/dashboard'
       const from = location.state?.from || fallbackRoute
 
       navigate(from, { replace: true })
-    } catch (error) {
+    }catch (error) {
       if (error.response) {
-        console.log('Server responded with error:', error.response.data)
+
+        const msg = error.response.data.message;
+    
+        if (msg === 'Invalid password' || msg === 'invalid credentials') {
+          setError(msg);
+        } else {
+          setError('Login failed. Please try again.');
+        }
+    
       } else if (error.request) {
-        console.log('No response from server')
+        setError('Unable to reach the server. Please check your connection.');
       } else {
-        console.log('Axios error:', error.message)
+        setError('Something went wrong. Please try again.');
       }
     }
+    
   }
 
   return (
     <>
       <NavBar />
+
       <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
         <div className="max-w-md w-full bg-white shadow-lg rounded-xl p-8">
           <h2 className="text-3xl font-extrabold text-center text-blue-700 mb-6">
             Welcome Back
           </h2>
+          {error && (
+  <div className="bg-red-100 text-red-700 px-4 py-2 rounded-lg mb-4">
+    {error}
+  </div>
+)}
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">

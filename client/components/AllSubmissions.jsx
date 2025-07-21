@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import NavBar from '../layout/NavBar';
 
 export default function AllSubmissions() {
   const [submissions, setSubmissions] = useState([]);
@@ -40,8 +41,10 @@ export default function AllSubmissions() {
   };
 
   return (
+    <div>
+      <NavBar />
     <div className="p-6">
-      <h2 className="text-3xl font-bold mb-6 text-center">📄 All Submissions</h2>
+     
 
       <div className="overflow-x-auto rounded-lg shadow border border-gray-200">
         <table className="min-w-full divide-y divide-gray-200">
@@ -109,6 +112,7 @@ export default function AllSubmissions() {
           </div>
         </div>
       )}
+    </div>
     </div>
   );
 }

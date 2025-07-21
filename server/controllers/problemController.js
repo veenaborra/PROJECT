@@ -175,3 +175,16 @@ export const deleteProblem=async(req,res)=>{
         res.status(500).json({message:'Error deleting problem:',error:error.message});
     }
 }
+
+// problem count
+export const getProblemCount = async (req, res) => {
+  try {
+    console.log("getProblemCount called");
+    const count = await Problem.countDocuments();
+    console.log("Count:", count);
+    res.status(200).json({ count });
+  } catch (error) {
+    console.error('❌ Error in getProblemCount:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};

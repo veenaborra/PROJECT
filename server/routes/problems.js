@@ -1,5 +1,5 @@
 import express from "express";
-import { createProblem,getAllPracticeProblems,getAllRatedProblems,getSpecificProblem,updateProblem,deleteProblem,getAllProblems} from "../controllers/problemController.js";
+import { createProblem,getAllPracticeProblems,getAllRatedProblems,getSpecificProblem,updateProblem,deleteProblem,getAllProblems,getProblemCount} from "../controllers/problemController.js";
 import { optionalAuth } from "../Middleware/optionalAuth.js";
 import {authMiddleware }from "../Middleware/authMiddleware.js";
 
@@ -15,7 +15,9 @@ problemsRouter.get('/allproblems',getAllProblems);
  problemsRouter.get('/practiceproblems',authMiddleware,getAllPracticeProblems);
 //get all rated problems
  problemsRouter.get('/ratedproblems',authMiddleware,getAllRatedProblems);
+// get problem count
 
+problemsRouter.get("/count",authMiddleware,getProblemCount);
 //get specific problem
  problemsRouter.get('/:id',getSpecificProblem);
 //update problem

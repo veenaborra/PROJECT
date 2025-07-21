@@ -10,6 +10,7 @@ import NavBar from "../layout/NavBar.jsx"
 function Signup(){
   const {refreshUser}=useAuth();
   const location = useLocation();
+  const [error, setError] = useState('');
 const from = location.state?.from || '/dashboard';
      const [formData,setFormData]=useState({
         username:"",
@@ -27,8 +28,9 @@ const navigate=useNavigate();
      const handleSubmit=async(e)=>{
         e.preventDefault();
         const {username,email,password,confirmPassword,role}=formData;
+        setError(''); 
         if(password!==confirmPassword){
-            alert('passwords do not match');
+          setError('Passwords do not match');
             return;
         }
        
@@ -38,7 +40,7 @@ const navigate=useNavigate();
         password,
     }
     try{
-        const signupresponse=await axios.post("http://localhost:8000/api/auth/signup",userData);
+        const signupresponse=await axios.post("http://localhost:8000/api/auth/signup",userData,{withCredentials:true});
         console.log("Signup successful");
     
        const loginresponse=await axios.post("http://localhost:8000/api/auth/login",{
@@ -55,17 +57,25 @@ const navigate=useNavigate();
 
 
     }
-    catch(error){
-if(error.response){
-    console.log("server responded with error:",error.response.data)
-}
-else if(error.request){
-    console.log("no response from server");
-}
-else{
-    console.log("axios error:",error.message);
-}
+    catch (error) {
+      if (error.response) {
+        const msg = error.response.data.message?.toLowerCase();
+    
+        if (msg.includes('email already exists')) {
+          setError('An account with this email already exists.');
+        } else if (msg.includes('username already exists')) {
+          setError('This username is already taken.');
+        } else {
+          setError('Signup failed. Please try again.');
+        }
+    
+      } else if (error.request) {
+        setError('Unable to reach the server. Please check your internet connection.');
+      } else {
+        setError('Something went wrong. Please try again.');
+      }
     }
+    
 
      }
     return (
@@ -74,6 +84,12 @@ else{
         <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
         <div className="bg-white shadow-xl rounded-lg p-8 w-full max-w-md border border-gray-200">
           <h2 className="text-3xl font-extrabold text-center  text-blue-700 mb-6">Sign Up</h2>
+           {error && (
+  <div className="text-red-500 text-sm text-center mt-2">
+    {error} 
+  </div>
+)}
+
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">

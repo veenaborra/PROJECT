@@ -14,6 +14,10 @@ import ProblemTable from '../components/ProblemTableAdmin'
 import AddProblem from '../components/AddProblem'
 import EditProblem from '../components/EditProblem'
 import AllSubmissions from '../components/AllSubmissions'
+import ProtectedRoute from '../components/ProtectedRoute'
+import PublicRoute from '../components/PublicRoute'
+
+
 
 
 
@@ -21,29 +25,132 @@ import AllSubmissions from '../components/AllSubmissions'
 function App() {
   
   return (
-    <BrowserRouter>
-    <Routes>
-    <Route path="/" element={<Home />}></Route>
- 
-   <Route path="/signup" element={<Signup />}></Route>
-   <Route path="/login" element={<Login />}></Route>
-   <Route path="/dashboard" element={<Dashboard />}></Route>
-   <Route path="/admin" element={<AdminDashboard />}></Route>
-   <Route path="/editprofile" element={<EditProfile />}></Route>
-   <Route path="/practiceproblems" element={<PracticeProblems />}></Route>
-   <Route path="/:id" element={<SpecificProblem />}></Route>
-   <Route path="/ratedproblems" element={<RatedProblems />}></Route>
-   <Route path='/admin/manageproblems' element={<ProblemTable />}></Route>
-   <Route path="/submissions" element={<Submissions />}></Route>
-   <Route path="/admin/addproblem" element={<AddProblem />}></Route>
-   <Route path="/admin/editproblem" element={<EditProblem />}></Route>
-   <Route path="/admin/editproblem/:id" element={<EditProblem />} />
-   <Route path="/admin/allsubmissions" element={<AllSubmissions />}></Route>
-
-    </Routes>
-    </BrowserRouter>
-
     
+<BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        {/* <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Login />} /> */}
+        <Route 
+  path="/login" 
+  element={
+    <PublicRoute>
+      <Login />
+    </PublicRoute>
+  } 
+/>
+<Route 
+  path="/signup" 
+  element={
+    <PublicRoute>
+      <Signup />
+    </PublicRoute>
+  } 
+/>
+
+
+        {/* User protected routes */}
+        <Route 
+          path="/dashboard" 
+          element={
+            <ProtectedRoute requiredRole="user">
+              <Dashboard />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/editprofile" 
+          element={
+            <ProtectedRoute requiredRole="user">
+              <EditProfile />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/practiceproblems" 
+          element={
+            <ProtectedRoute requiredRole="user">
+              <PracticeProblems />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/:id" 
+          element={
+            <ProtectedRoute requiredRole="user">
+              <SpecificProblem />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/ratedproblems" 
+          element={
+            <ProtectedRoute requiredRole="user">
+              <RatedProblems />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/submissions" 
+          element={
+            <ProtectedRoute requiredRole="user">
+              <Submissions />
+            </ProtectedRoute>
+          } 
+        />
+
+        {/* Admin protected routes */}
+        <Route 
+          path="/admin/dashboard" 
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <AdminDashboard />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin/manageproblems" 
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <ProblemTable />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin/addproblem" 
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <AddProblem />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin/editproblem" 
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <EditProblem />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin/editproblem/:id" 
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <EditProblem />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin/allsubmissions" 
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <AllSubmissions />
+            </ProtectedRoute>
+          } 
+        />
+
+      </Routes>
+    </BrowserRouter>
   )
 }
 

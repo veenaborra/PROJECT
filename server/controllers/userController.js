@@ -4,7 +4,11 @@ import mongoose from "mongoose";
 import dayjs from "dayjs";
 
 //user
-export const readUser=async (req,res)=>{
+export const readUser=async(req,res)=>{
+  if(!req.user) {
+    return res.status(401).json({ message: 'Not logged in' });
+  }
+
     const {userId,role}=req.user;
     const user=await User.findById(userId);
     if(!user){

@@ -1,8 +1,15 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import NavBar from "../layout/NavBar";
+import { useAuth } from "../context/AuthContext";
+import { Navigate } from "react-router-dom";
 
 function Home() {
+  const { id, role } = useAuth();
+
+  if (id) {
+    return <Navigate to={role === 'admin' ? '/admin/dashboard' : '/dashboard'} />;
+  }
   return (
     <>
       <NavBar />

@@ -38,7 +38,7 @@ const navigate=useNavigate();
 
 {role === 'admin' && (
           <>
-            <Link to="/admin" className="hover:underline">Home</Link>
+            <Link to="/admin/dashboard" className="hover:underline">Home</Link>
             <Link to="/admin/manageproblems" className="hover:underline">Manage Problems</Link>
             <Link to="/admin/allsubmissions" className="hover:underline">All Submissions</Link>
             <ProfileDropdown />

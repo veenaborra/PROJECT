@@ -14,7 +14,7 @@ if(!token){
 
  req.user=userInfo;
  req.userId=userInfo.userId;
- console.log("✅ Auth passed:", userInfo);
+ console.log("Auth passed:", userInfo);
  next();
 }
 catch (err) {

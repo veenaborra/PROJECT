@@ -16,7 +16,7 @@ export default function AdminDashboard() {
         setProblemCount(problemRes.data.count);
         setSubmissionCount(submissionRes.data.count);
       } catch (err) {
-        console.error('Failed to fetch dashboard stats:', err.message);
+        console.error('Failed to fetch dashboard stats:',err.message);
       }
     };
 
@@ -50,7 +50,7 @@ export default function AdminDashboard() {
           <h3 className="text-xl font-semibold text-gray-800">Total Submissions</h3>
           <p className="text-4xl font-bold text-green-600 mt-4">{submissionCount}</p>
           <Link
-            to="/admin/submissions"
+            to="/admin/allsubmissions"
             className="mt-4 block text-blue-500 hover:underline transition"
           >
             View Submissions

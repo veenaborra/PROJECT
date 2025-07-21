@@ -9,8 +9,14 @@ export const signUp=async(req,res)=>{
     try{
         const {username,email,password}=req.body;
 
-        const existingUser=await User.findOne({email});
-        if(existingUser) return res.status(400).json({message:"user already exists"});
+        const existingUser=await User.findOne({$or:[{email},{username}]});
+        if (existingUser) {
+            const conflictField = existingUser.email === email ? 'Email' : 'Username';
+            return res.status(400).json({ message: `${conflictField} already exists` });
+          }
+     
+
+        
 
 
         const salt=await bcrypt.genSalt(10);
@@ -33,6 +39,7 @@ export const signUp=async(req,res)=>{
         res.status(201).json({message:'User registered suceessfully'});
     }
     catch(error){
+        console.log(error);
         res.status(500).json({message:'something went wrong ',error:error.message})
         
     }

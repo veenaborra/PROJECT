@@ -92,7 +92,7 @@ export const Submit = async (req, res) => {
 
 export const UserSubmissions=async(req,res)=>{
 try{
-  const {userId} = req.userId;
+  const {userId} = req.user;
   console.log(userId);
   const submissions = await Submission.find( {userId})
       .sort({ submittedAt: -1 })
@@ -155,5 +155,17 @@ export const getAllSubmissions = async (req, res) => {
   } catch (error) {
     console.error('Error fetching submissions:', error.message);
     res.status(500).json({ error: 'Server error while fetching submissions' });
+  }
+};
+//total submissions count
+
+export const getSubmissionCount = async (req, res) => {
+  try {
+    const count = await Submission.countDocuments();
+    console.log(count);
+    res.status(200).json({ count });
+  } catch (error) {
+    console.error('Error fetching submission count:', error).message;
+    res.status(500).json({ message: 'Internal server error' });
   }
 };
