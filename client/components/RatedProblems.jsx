@@ -3,6 +3,7 @@ import NavBar from '../layout/NavBar'
 import axios from 'axios'
 import {  useNavigate } from 'react-router-dom';
 import { FaSearch } from "react-icons/fa";
+import { backend } from '../utils/api';
 
 
 
@@ -26,8 +27,8 @@ navigate(`/${id}`);
 useEffect(()=>{
     const fetchProblems=async ()=>{
         try{
-            const res=await axios.get("http://localhost:8000/api/problems/ratedproblems",{withCredentials:true});
-            console.log(res.data);
+            const res=await backend.get("/problems/ratedproblems");
+     
             setProblems(res.data.ratedProblems);
             setLoading(false);
         }  

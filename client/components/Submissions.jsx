@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import NavBar from '../layout/NavBar';
 import { useNavigate } from 'react-router-dom';
+import { backend } from '../utils/api';
 
 export default function Submissions() {
   const [submissions, setSubmissions] = useState([]);
@@ -13,10 +14,8 @@ export default function Submissions() {
   useEffect(() => {
     const fetchSubmissions = async () => {
       try {
-        const res = await axios.get('http://localhost:8000/api/submissions', {
-          withCredentials: true, 
-        });
-        console.log(res.data);
+        const res = await backend.get('/submissions');
+        
         setSubmissions(res.data.submissions || []);
       } catch (err) {
         console.error('Error fetching submissions:', err.message);

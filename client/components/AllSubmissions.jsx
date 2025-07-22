@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import NavBar from '../layout/NavBar';
+import fetchSubmittedCode  from '../utils/fetchSubmittedCode.js';
+import { backend } from '../utils/api';
 
 export default function AllSubmissions() {
   const [submissions, setSubmissions] = useState([]);
@@ -10,7 +12,7 @@ export default function AllSubmissions() {
   useEffect(() => {
     const fetchSubmissions = async () => {
       try {
-        const res = await axios.get('http://localhost:8000/api/allsubmissions', {
+        const res = await backend.get('/allsubmissions', {
           withCredentials: true,
         });
         setSubmissions(res.data);
@@ -24,10 +26,8 @@ export default function AllSubmissions() {
 
   const handleRowClick = async (id) => {
     try {
-      const res = await axios.get(`http://localhost:8000/api/submissions/${id}`, {
-        withCredentials: true,
-      });
-      setSelectedCode(res.data.code);
+      const code = await fetchSubmittedCode(id);
+      setSelectedCode(code);
       setShowModal(true);
     } catch (err) {
       console.error('Error fetching submission code:', err);
@@ -48,50 +48,53 @@ export default function AllSubmissions() {
 
       <div className="overflow-x-auto rounded-lg shadow border border-gray-200">
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50 text-sm font-medium text-gray-700">
-            <tr>
-              <th className="px-4 py-3 text-left">User</th>
-              <th className="px-4 py-3 text-left">Problem</th>
-              <th className="px-4 py-3 text-left">Language</th>
-              <th className="px-4 py-3 text-left">Status</th>
-              <th className="px-4 py-3 text-left">Submitted At</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100 text-sm">
-            {submissions.length > 0 ? (
-              submissions.map((submission) => (
-                <tr
-                  key={submission._id}
-                  className="hover:bg-gray-50 transition cursor-pointer"
-                  onClick={() => handleRowClick(submission._id)}
-                >
-                  <td className="px-4 py-3">{submission.userId?.username || 'Unknown'}</td>
-                  <td className="px-4 py-3">{submission.problemId?.title || 'Unknown'}</td>
-                  <td className="px-4 py-3 capitalize text-blue-600 font-medium">
-                    {submission.language}
-                  </td>
-                  <td
-                    className={`px-4 py-3 font-semibold ${
-                      submission.result === 'Accepted'
-                        ? 'text-green-600'
-                        : 'text-red-500'
-                    }`}
-                  >
-                    {submission.result}
-                  </td>
-                  <td className="px-4 py-3 text-gray-600">
-                    {new Date(submission.submittedAt).toLocaleString()}
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="5" className="px-4 py-6 text-center text-gray-500">
-                  No submissions found.
-                </td>
-              </tr>
-            )}
-          </tbody>
+        <thead>
+  <tr>
+    <th className="px-4 py-3 text-left">User</th>
+    <th className="px-4 py-3 text-left">Problem</th>
+    <th className="px-4 py-3 text-left">Language</th>
+    <th className="px-4 py-3 text-left">Status</th>
+    <th className="px-4 py-3 text-left">Submitted At</th>
+    <th className="px-4 py-3 text-left">Actions</th>
+  </tr>
+</thead>
+<tbody>
+  {submissions.map((submission, index) => (
+    <tr
+      key={submission._id}
+      className={`transition ${
+        index % 2 === 0 ? "bg-white" : "bg-gray-100"
+      }`}
+    >
+      <td className="px-4 py-3">{submission.userId?.username || 'Unknown'}</td>
+      <td className="px-4 py-3">{submission.problemId?.title || 'Unknown'}</td>
+      <td className="px-4 py-3 capitalize text-blue-600 font-medium">
+        {submission.language}
+      </td>
+      <td
+        className={`px-4 py-3 font-semibold ${
+          submission.result === 'Accepted'
+            ? 'text-green-600'
+            : 'text-red-500'
+        }`}
+      >
+        {submission.result}
+      </td>
+      <td className="px-4 py-3 text-gray-600">
+        {new Date(submission.submittedAt).toLocaleString()}
+      </td>
+      <td className="px-4 py-3">
+        <button
+          className="text-sm text-blue-600 hover:underline"
+          onClick={() => handleRowClick(submission._id)}
+        >
+          View Code
+        </button>
+      </td>
+    </tr>
+  ))}
+</tbody>
+
         </table>
       </div>
 

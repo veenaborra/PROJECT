@@ -5,10 +5,13 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { useLocation } from 'react-router-dom';
+import fetchSubmittedCode  from '../utils/fetchSubmittedCode.js';
+import { backend,compiler } from '../utils/api';
+
 
 
 export default function ProblemEditor({ problem ,submissionId}) {
-  console.log(problem);
+
   const navigate = useNavigate();
   const location = useLocation();
   const { id } = useAuth(); 
@@ -29,35 +32,17 @@ export default function ProblemEditor({ problem ,submissionId}) {
 
 
   useEffect(() => {
-    const fetchSubmittedCode = async () => {
+    const fetchSubmittedCodeForEditor = async () => {
       if (!submissionId) return;
-  
       try {
-        
-        const submissionRes = await axios.get(
-          `http://localhost:8000/api/submissions/${submissionId}`,
-          { withCredentials: true }
-        );
-  
-        const submission = submissionRes.data;
-        const filePath = submission.filePath;
-        console.log(filePath);
-  
-     
-        const codeRes = await axios.get(
-          `http://localhost:8080/code?path=${encodeURIComponent(filePath)}`,
-          { withCredentials: true }
-        );
-  
-        setCode(codeRes.data.code || '// Submitted code not found.');
-        setInitialCode(codeRes.data.code || '// Submitted code not found.');
-       
+        const code = await fetchSubmittedCode(submissionId);
+        setCode(code);
+        setInitialCode(code);
       } catch (err) {
         console.error('Failed to fetch submitted code:', err.message);
       }
     };
-  
-    fetchSubmittedCode();
+    fetchSubmittedCodeForEditor();
   }, [submissionId]);
   
 
@@ -84,17 +69,16 @@ export default function ProblemEditor({ problem ,submissionId}) {
     setActiveTab('AI Review');
     setAiLoading(true);
     try{
-      const res=await axios.post("http://localhost:8080/ai-review",{code,
+      const res=await compiler.post("/ai-review",{code,
       title:problem?.title||"",
       description:problem?.description|| "",
-      constraints:problem.constraints || ""},
-      {withCredentials:true});
+      constraints:problem.constraints || ""});
       const { aiResponse } = res.data;
       setAiReview(aiResponse || 'No feedback provided.');
       setActiveTab('AI Review');
     }
     catch(err){
-      console.log(err.response);
+      
       const message =
       err.response?.data?.error || 'Failed to fetch AI review.';
     setAiReview(message);
@@ -114,14 +98,12 @@ export default function ProblemEditor({ problem ,submissionId}) {
     setActiveTab('Output'); 
     setRunLoading(true);
     try {
-      const res = await axios.post(
-        'http://localhost:8080/run',
+      const res = await compiler.post('/run',
         {
           code,
           input: customInput || '',
           language,
-        },
-        { withCredentials: true }
+        }
       );
       setOutput(res.data.output || '');
       setActiveTab('Output');
@@ -143,14 +125,13 @@ export default function ProblemEditor({ problem ,submissionId}) {
     setVerdictLoading(true);
   
     try {
-      const res = await axios.post(
-        'http://localhost:8000/api/submit',
+      const res = await backend.post(
+        '/submit',
         {
           code,
           language,
           problemId: problem._id,
-        },
-        { withCredentials: true }
+        }
       );
   
       const { result, failedTests, details } = res.data;

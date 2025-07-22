@@ -7,9 +7,11 @@ import { FaRegSmileBeam } from "react-icons/fa";
 import { RiSparklingLine } from "react-icons/ri";
 import { BsFire } from "react-icons/bs";
 import { PiConfettiBold } from "react-icons/pi";
+import { backend } from '../utils/api';
+import { publicBackend } from '../utils/api';
 
 export default function Dashboard() {
-  const { id, role ,username} = useAuth(); // assuming user object has stats
+  const { id, role ,username} = useAuth();
   const [problems, setProblems] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -18,7 +20,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchGuestProblems = async () => {
       try {
-        const res = await axios.get('http://localhost:8000/api/problems/allproblems');
+        const res = await publicBackend.get('/problems/allproblems');
         setProblems(res.data.problems);
       } catch (err) {
         console.log('Error:', err.message);
@@ -34,7 +36,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await axios.get('http://localhost:8000/api/user/stats', { withCredentials: true });
+        const res = await backend.get('/user/stats');
         setUserStats(res.data);
       } catch (err) {
         console.error("Failed to fetch stats", err);

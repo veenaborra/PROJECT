@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import NavBar from '../layout/NavBar';
+import { backend } from '../utils/api';
+
 
 export default function EditProblem() {
   const { id } = useParams();
@@ -22,7 +24,7 @@ export default function EditProblem() {
 
   const fetchProblem = async () => {
     try {
-      const res = await axios.get(`http://localhost:8000/api/problems/${id}`, {
+      const res = await backend.get(`/problems/${id}`, {
         withCredentials: true,
       });
       setFormData(res.data);
@@ -30,7 +32,7 @@ export default function EditProblem() {
       console.error('Update error:', err);
     
       if (err.response?.data?.error) {
-        alert(err.response.data.error); // e.g., "Another problem with this title already exists"
+        alert(err.response.data.error); 
       } else if (err.message) {
         alert(`Error: ${err.message}`);
       } else {

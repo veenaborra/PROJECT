@@ -3,6 +3,7 @@ import axios from 'axios';
 import NavBar from '../layout/NavBar';
 import { useNavigate } from 'react-router-dom';
 import { FaSearch } from 'react-icons/fa';
+import { backend } from '../utils/api';
 
 export default function ProblemTable() {
   const [problems, setProblems] = useState([]);
@@ -11,9 +12,7 @@ export default function ProblemTable() {
 
   const fetchProblems = async () => {
     try {
-      const res = await axios.get('http://localhost:8000/api/problems/allproblems', {
-        withCredentials: true,
-      });
+      const res = await backend.get('/problems/allproblems');
       setProblems(res.data.problems);
     } catch (err) {
       console.error(err);
@@ -35,7 +34,7 @@ export default function ProblemTable() {
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this problem?')) return;
     try {
-      await axios.delete(`http://localhost:8000/api/problems/${id}`, { withCredentials: true });
+      await backend.delete(`/problems/${id}`, { withCredentials: true });
       fetchProblems();
     } catch (err) {
       console.error(err);
@@ -79,45 +78,41 @@ export default function ProblemTable() {
             </tr>
           </thead>
           <tbody>
-            {filteredProblems.map((problem) => (
-              <tr key={problem._id} className="hover:bg-gray-50">
-                <td className="p-2 border-b">{problem.title}</td>
-                <td
-                  className={`p-2 border-b font-semibold ${
-                    problem.difficulty === 'Easy'
-                      ? 'text-green-600'
-                      : problem.difficulty === 'Medium'
-                      ? 'text-yellow-600'
-                      : 'text-red-500'
-                  }`}
-                >
-                  {problem.difficulty}
-                </td>
-                <td className="p-2 border-b">
-                  <button
-                    onClick={() => handleEdit(problem._id)}
-                    className="text-blue-600 hover:underline text-sm"
-                  >
-                    Edit
-                  </button>
-                </td>
-                <td className="p-2 border-b">
-                  <button
-                    onClick={() => handleDelete(problem._id)}
-                    className="text-red-600 hover:underline text-sm"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-            {filteredProblems.length === 0 && (
-              <tr>
-                <td colSpan="4" className="p-4 text-center text-gray-500">
-                  No problems found.
-                </td>
-              </tr>
-            )}
+          {filteredProblems.map((problem, index) => (
+    <tr
+      key={problem._id}
+      className={`hover:bg-gray-50 ${index % 2 === 0 ? "bg-white" : "bg-gray-100"}`}
+    >
+      <td className="p-2 border-b">{problem.title}</td>
+      <td
+        className={`p-2 border-b font-semibold ${
+          problem.difficulty === 'Easy'
+            ? 'text-green-600'
+            : problem.difficulty === 'Medium'
+            ? 'text-yellow-600'
+            : 'text-red-500'
+        }`}
+      >
+        {problem.difficulty}
+      </td>
+      <td className="p-2 border-b">
+        <button
+          onClick={() => handleEdit(problem._id)}
+          className="text-blue-600 hover:underline text-sm"
+        >
+          Edit
+        </button>
+      </td>
+      <td className="p-2 border-b">
+        <button
+          onClick={() => handleDelete(problem._id)}
+          className="text-red-600 hover:underline text-sm"
+        >
+          Delete
+        </button>
+      </td>
+    </tr>
+  ))}
           </tbody>
         </table>
       </div>

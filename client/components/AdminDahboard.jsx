@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import NavBar from '../layout/NavBar';
+import { backend } from '../utils/api';
 
 export default function AdminDashboard() {
   const [problemCount, setProblemCount] = useState(0);
@@ -10,8 +11,8 @@ export default function AdminDashboard() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const problemRes = await axios.get('http://localhost:8000/api/problems/count', { withCredentials: true });
-        const submissionRes = await axios.get('http://localhost:8000/api/submissions/count', { withCredentials: true });
+        const problemRes = await backend.get('/problems/count');
+        const submissionRes = await backend.get('/submissions/count');
 
         setProblemCount(problemRes.data.count);
         setSubmissionCount(submissionRes.data.count);

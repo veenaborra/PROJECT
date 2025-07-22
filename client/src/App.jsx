@@ -29,8 +29,7 @@ function App() {
 <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
-        {/* <Route path="/signup" element={<Signup />} />
-        <Route path="/login" element={<Login />} /> */}
+        
         <Route 
   path="/login" 
   element={
@@ -53,9 +52,9 @@ function App() {
         <Route 
           path="/dashboard" 
           element={
-            <ProtectedRoute requiredRole="user">
+          
               <Dashboard />
-            </ProtectedRoute>
+        
           } 
         />
         <Route 
@@ -77,9 +76,9 @@ function App() {
         <Route 
           path="/:id" 
           element={
-            <ProtectedRoute requiredRole="user">
+          
               <SpecificProblem />
-            </ProtectedRoute>
+           
           } 
         />
         <Route 

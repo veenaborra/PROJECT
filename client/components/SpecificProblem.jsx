@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import ProblemEditor from './ProblemEditor';
 import { useSearchParams } from 'react-router-dom';
+import { backend } from '../utils/api';
 
 
 
@@ -20,7 +21,7 @@ const submissionId = searchParams.get('submission');
   useEffect(() => {
     const fetchProblem = async () => {
       try {
-        const res = await axios.get(`http://localhost:8000/api/problems/${id}`);
+        const res = await backend.get(`/problems/${id}`);
         setProblem(res.data);
       } catch (error) {
         console.error("Error fetching problem:", error);
@@ -33,8 +34,7 @@ const submissionId = searchParams.get('submission');
 
   if (loading) return <p className="text-center mt-10 text-lg">Loading...</p>;
   if (!problem) return <p className="text-center mt-10 text-lg">Problem not found.</p>;
-  console.log("Problem:", problem);
-
+ 
   return (
     <>
       <NavBar />

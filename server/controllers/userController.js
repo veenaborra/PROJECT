@@ -40,9 +40,20 @@ export const updateUser=async(req,res)=>{
         res.json({message:"User updated successfully",
             user:updatedUser});
         }
-        catch(error){
-            res.status(500).json({ message: 'Server error', error: error.message });
-        }
+        catch (error) {
+        
+          if (error.code === 11000) {
+              const field = Object.keys(error.keyValue)[0];
+              return res.status(400).json({
+                  message: `${field} already exists`,
+                 
+              });
+          }
+  
+          res.status(500).json({
+              message: 'Internal server error'
+          });
+      }
 
 }
 

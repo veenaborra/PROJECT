@@ -2,11 +2,13 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 const PublicRoute = ({ children }) => {
-  const { user } = useAuth();
+  const { id, role, loading } = useAuth();
 
-  if (user) {
-    // If logged in, redirect to dashboard based on role
-    if (user.role === "admin") {
+  if (loading) return <div>Loading...</div>;
+
+  if (id) {
+   
+    if (role === "admin") {
       return <Navigate to="/admin/dashboard" replace/>;
     }
     return <Navigate to="/dashboard" replace />;

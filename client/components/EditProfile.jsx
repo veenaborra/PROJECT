@@ -3,6 +3,8 @@ import axios from 'axios'
 import { useAuth } from '../context/AuthContext'
 import { useState ,useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
+import NavBar from '../layout/NavBar';
+import { backend } from '../utils/api';
 export default function EditProfile() {
     const {id,username,email}=useAuth();
     const navigate=useNavigate();
@@ -11,13 +13,15 @@ export default function EditProfile() {
       username:"",
      
     })
+    const [error, setError] = useState(""); 
+
     useEffect(() => {
         if (email && username) {
           setFormData({ email, username })
         }
       }, [email, username])
       if (!email || !username) {
-        return <div className="text-center mt-10 text-gray-600">Loading profile...</div>; // ✅ Loading state
+        return <div className="text-center mt-10 text-gray-600">Loading profile...</div>; 
       }
     const handleChange=(e)=>{
         setFormData({...formData,
@@ -26,7 +30,7 @@ export default function EditProfile() {
       }
       const handleSubmit=async(e)=>{
         e.preventDefault();
-        console.log("form submitted");
+       
         
         const {email,username}=formData;
         
@@ -34,33 +38,42 @@ export default function EditProfile() {
        const userData={email,username}
       
       try{
-        const response=await axios.patch(`http://localhost:8000/api/user/${id}`,userData,{
-          withCredentials:true
-        });
+        const response=await backend.patch(`/user/${id}`,userData);
         const {role}=response.data;
-       console.log("updated successfully",response.data);
-       console.log("Navigating to /dashboard");
+       
+      
      
        navigate('/dashboard');
       
       }
-      catch(error){
-      if(error.response){
-      console.log("server responded with error:",error.response.data)
-      }
-      else if(error.request){
-      console.log("no response from server");
-      }
-      else{
-      console.log("axios error:",error.message);
-      }
-      }
       
+      catch (error) {
+        if (error.response) {
+          console.log("server responded with error:", error.response.data);
+  
+          if (error.response.data?.message?.includes("already exists")) {
+            setError(error.response.data.message);
+          } else {
+            setError("Failed to update profile. Please try again.");
+          }
+        } else if (error.request) {
+          setError("No response from server. Check your connection.");
+        } else {
+          setError( error.message);
+        }
       }
+    };
   return (
+    <>
+    <NavBar />
 <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+
     <div className="max-w-md w-full bg-white shadow-md rounded-xl p-8 space-y-6">
-      <h2 className="text-2xl font-bold text-center text-gray-800">Update Your Profile</h2>
+      <h2 className="text-2xl font-bold text-center text-blue-600">Update Your Profile</h2>
+      {error && (
+            <div className="text-red-500 text-sm text-center">{error}</div>
+          )}
+
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="text"
@@ -89,6 +102,7 @@ export default function EditProfile() {
       </form>
     </div>
   </div>
+  </>
   )
   
 }

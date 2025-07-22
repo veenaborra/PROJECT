@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import NavBar from '../layout/NavBar';
-
+import { backend } from '../utils/api';
 export default function AddProblem() {
   const [formData, setFormData] = useState({
     title: '',
@@ -28,7 +28,7 @@ export default function AddProblem() {
       setFormData((prev) => ({
         ...prev,
         difficulty: value,
-        points, // auto-update points
+        points, 
       }));
     } else {
       setFormData((prev) => ({
@@ -73,11 +73,11 @@ export default function AddProblem() {
     };
 
     try {
-      await axios.post('http://localhost:8000/api/problems', payload, { withCredentials: true });
+      await backend.post('/problems', payload);
       alert('Problem added successfully!');
       navigate('/admin/manageproblems');
     } catch (err) {
-      console.error(err);
+     
       if (err.response && err.response.data?.error) {
         alert(err.response.data.error); 
       } else {

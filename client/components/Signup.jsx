@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom"
 import { useLocation } from 'react-router-dom';
 import { useAuth } from "../context/AuthContext.jsx"
 import NavBar from "../layout/NavBar.jsx"
+import { backend } from "../utils/api.js";
 
 
 function Signup(){
@@ -40,17 +41,15 @@ const navigate=useNavigate();
         password,
     }
     try{
-        const signupresponse=await axios.post("http://localhost:8000/api/auth/signup",userData,{withCredentials:true});
-        console.log("Signup successful");
-    
-       const loginresponse=await axios.post("http://localhost:8000/api/auth/login",{
+        const signupresponse=await backend.post("/auth/signup",userData);
+        
+       const loginresponse=await backend.post("/auth/login",{
         emailOrUsername:userData.username,
         password:userData.password
-       },{withCredentials:true});
+       });
        
        await refreshUser();
-       console.log("auto login successful");
-
+      
        navigate(from, { replace: true });
 
 

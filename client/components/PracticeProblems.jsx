@@ -3,12 +3,14 @@ import NavBar from '../layout/NavBar'
 import axios from 'axios'
 import { Navigate, useNavigate } from 'react-router-dom';
 import { FaSearch } from "react-icons/fa";
+import { backend } from '../utils/api';
 
 export default  function PracticeProblems() {
 const [problems,setProblems]=useState([]);
 const [loading,setLoading]=useState(true);
 const [searchTerm, setSearchTerm] = useState('');
 const navigate=useNavigate();
+
 
 const handleRowClick=(id)=>{
 navigate(`/${id}`);
@@ -22,8 +24,8 @@ const filteredProblems = problems.filter((problem) =>
 useEffect(()=>{
     const fetchProblems=async ()=>{
         try{
-            const res=await axios.get("http://localhost:8000/api/problems/practiceproblems",{withCredentials:true});
-            console.log(res.data);
+            const res=await backend.get("/problems/practiceproblems");
+          
             setProblems(res.data.practiceProblems);
             setLoading(false);
         }  

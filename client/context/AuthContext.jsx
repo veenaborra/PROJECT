@@ -1,6 +1,7 @@
-// AuthContext.js
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
+import { backend } from '../utils/api';
 
 const AuthContext = createContext();
 
@@ -10,10 +11,10 @@ export const AuthProvider = ({ children }) => {
 
   const fetchUser = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/api/user/me", {
+      const res = await backend.get("/user/me", {
         withCredentials: true
       });
-      console.log("API RESPONSE:", res.data);
+     
       setAuth({ role: res.data.role, id: res.data.userId ,email:res.data.email,username:res.data.username});
     } catch (e) {
       setAuth({ role: null, id: null ,email:null,username:null});

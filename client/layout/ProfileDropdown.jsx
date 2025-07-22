@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import ConfirmModal from './ConfirmModal';
 import { CgProfile } from "react-icons/cg";
+import { backend } from '../utils/api';
 
 const ProfileDropdown=()=>{
     const {role,refreshUser,id}=useAuth();
@@ -14,7 +15,7 @@ const navigate =useNavigate();
 //handling logout
     const handleLogout=async()=>{
         try{
-    await axios.post("http://localhost:8000/api/auth/logout",{},{withCredentials:true});
+    await backend.post("/auth/logout",{});
     await refreshUser();
     navigate('/login');
     }
@@ -24,9 +25,8 @@ const navigate =useNavigate();
 //handling deletion of user
 const handleDelete=async()=>{
     try{
-    await axios.delete(`http://localhost:8000/api/user/${id}`,{withCredentials:true});
+    await backend.delete(`/user/${id}`);
     await refreshUser();
-    console.log("user deleted");
     navigate('/login');}
     catch(error){
       console.error("Account deletion failed ",error);

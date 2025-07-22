@@ -3,6 +3,8 @@ import axios from 'axios'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import NavBar from '../layout/NavBar'
+import { backend } from '../utils/api'
+import { compiler } from '../utils/api'
 
 const Login = () => {
   const navigate = useNavigate()
@@ -29,11 +31,7 @@ const Login = () => {
     const userData = { emailOrUsername, password }
 
     try {
-      const response = await axios.post(
-        'http://localhost:8000/api/auth/login',
-        userData,
-        { withCredentials: true }
-      )
+      const response = await backend.post('/auth/login', userData);
 
       const { role } = response.data
       await refreshUser()
