@@ -184,7 +184,7 @@ export const getProblemCount = async (req, res) => {
     console.log("Count:", count);
     res.status(200).json({ count });
   } catch (error) {
-    console.error('❌ Error in getProblemCount:', error);
+    console.error(' Error in getProblemCount:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };

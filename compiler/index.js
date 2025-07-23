@@ -24,7 +24,7 @@ dotenv.config();
 const port=process.env.PORT ;
 
 app.use(cors({
-    origin:["http://localhost:5173","http://localhost:8000"],
+    origin:["https://www.algonest.online","https://backend.algonest.online"],
     credentials:true,
 }));
 

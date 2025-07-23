@@ -13,7 +13,7 @@ dotenv.config();
 const app=express();
 app.use(cookieParser());
 app.use(cors({
-    origin:["http://localhost:5173",'http://localhost:8080'],
+    origin:["https://www.algonest.online",'https://compiler.algonest.online'],
     credentials:true,
 }));
 

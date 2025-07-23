@@ -28,7 +28,7 @@ export const Submit = async (req, res) => {
     // Try compiler execution
     try {
       const compilerRes = await axios.post(
-        'http://localhost:8080/submit',
+        'https://compiler.algonest.online/submit',
         { code, language, testcases },
         {
           headers: { 'x-internal-token': process.env.INTERNAL_SECRET },
