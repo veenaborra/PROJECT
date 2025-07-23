@@ -16,6 +16,7 @@ import EditProblem from '../components/EditProblem'
 import AllSubmissions from '../components/AllSubmissions'
 import ProtectedRoute from '../components/ProtectedRoute'
 import PublicRoute from '../components/PublicRoute'
+import NotFound from '../components/NotFound';
 
 
 
@@ -32,19 +33,11 @@ function App() {
         
         <Route 
   path="/login" 
-  element={
-    <PublicRoute>
-      <Login />
-    </PublicRoute>
-  } 
+  element={<Login />} 
 />
 <Route 
   path="/signup" 
-  element={
-    <PublicRoute>
-      <Signup />
-    </PublicRoute>
-  } 
+  element={<Signup />} 
 />
 
 
@@ -147,8 +140,9 @@ function App() {
             </ProtectedRoute>
           } 
         />
-
+   <Route path="*" element={<NotFound />} />
       </Routes>
+      
     </BrowserRouter>
   )
 }

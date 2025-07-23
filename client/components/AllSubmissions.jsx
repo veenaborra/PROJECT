@@ -3,6 +3,7 @@ import axios from 'axios';
 import NavBar from '../layout/NavBar';
 import fetchSubmittedCode  from '../utils/fetchSubmittedCode.js';
 import { backend } from '../utils/api';
+import { useLocation } from "react-router-dom";
 
 export default function AllSubmissions() {
   const [submissions, setSubmissions] = useState([]);

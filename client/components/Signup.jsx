@@ -1,7 +1,7 @@
 import React from "react"
 import axios from "axios"
 import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, Navigate } from "react-router-dom"
 import { useLocation } from 'react-router-dom';
 import { useAuth } from "../context/AuthContext.jsx"
 import NavBar from "../layout/NavBar.jsx"
@@ -9,10 +9,14 @@ import { backend } from "../utils/api.js";
 
 
 function Signup(){
-  const {refreshUser}=useAuth();
+  const {refreshUser, id, role} = useAuth();
   const location = useLocation();
   const [error, setError] = useState('');
-const from = location.state?.from || '/dashboard';
+  const [signingUp, setSigningUp] = useState(false);
+  if (id && !signingUp) {
+    return <Navigate to={role === "admin" ? "/admin/dashboard" : "/dashboard"} replace />;
+  }
+  const from = location.state?.from || '/dashboard';
      const [formData,setFormData]=useState({
         username:"",
         email:"",
@@ -41,6 +45,7 @@ const navigate=useNavigate();
         password,
     }
     try{
+      setSigningUp(true);
         const signupresponse=await backend.post("/auth/signup",userData);
         
        const loginresponse=await backend.post("/auth/login",{
@@ -73,6 +78,8 @@ const navigate=useNavigate();
       } else {
         setError('Something went wrong. Please try again.');
       }
+    } finally {
+      setSigningUp(false);
     }
     
 

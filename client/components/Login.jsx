@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import axios from 'axios'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate, useLocation, Navigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import NavBar from '../layout/NavBar'
 import { backend } from '../utils/api'
@@ -9,8 +9,13 @@ import { compiler } from '../utils/api'
 const Login = () => {
   const navigate = useNavigate()
   const location = useLocation()
-  const { refreshUser } = useAuth()
+  const { refreshUser, id, role } = useAuth();
   const [error, setError] = useState('');
+  const [signingUp, setSigningUp] = useState(false);
+
+  if (id && !signingUp) {
+    return <Navigate to={role === "admin" ? "/admin/dashboard" : "/dashboard"} replace />;
+  }
 
   const [formData, setFormData] = useState({
     emailOrUsername: '',
@@ -31,6 +36,7 @@ const Login = () => {
     const userData = { emailOrUsername, password }
 
     try {
+      setSigningUp(true);
       const response = await backend.post('/auth/login', userData);
 
       const { role } = response.data
@@ -56,6 +62,8 @@ const Login = () => {
       } else {
         setError('Something went wrong. Please try again.');
       }
+    } finally {
+      setSigningUp(false);
     }
     
   }
@@ -111,12 +119,13 @@ const Login = () => {
             </button>
             <p className="text-sm text-gray-600 mt-6 text-center">
               Don't have an account?{' '}
-              <a
-                href="/signup"
+              <Link
+                to="/signup"
+                state={location.state?.from ? { from: location.state.from } : undefined}
                 className="text-blue-600 hover:underline font-medium"
               >
                 Sign Up
-              </a>
+              </Link>
             </p>
           </form>
         </div>
