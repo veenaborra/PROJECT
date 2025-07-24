@@ -21,7 +21,7 @@ const filteredProblems = problems.filter((problem) =>
 
 
 const handleRowClick=(id)=>{
-navigate(`/${id}`);
+navigate(`/problems/${id}`);
 }
 
 useEffect(()=>{

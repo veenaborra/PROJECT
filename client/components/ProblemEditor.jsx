@@ -69,7 +69,7 @@ export default function ProblemEditor({ problem ,submissionId}) {
     setActiveTab('AI Review');
     setAiLoading(true);
     try{
-      const res=await compiler.post("/ai-review",{code,
+      const res=await backend.post("/compiler/ai-review",{code,
       title:problem?.title||"",
       description:problem?.description|| "",
       constraints:problem.constraints || ""});
@@ -98,7 +98,7 @@ export default function ProblemEditor({ problem ,submissionId}) {
     setActiveTab('Output'); 
     setRunLoading(true);
     try {
-      const res = await compiler.post('/run',
+      const res = await backend.post('/compiler/run',
         {
           code,
           input: customInput || '',
@@ -108,7 +108,11 @@ export default function ProblemEditor({ problem ,submissionId}) {
       setOutput(res.data.output || '');
       setActiveTab('Output');
     } catch (err) {
-      setOutput(err.response?.data?.details || 'Unknown error while running the code.');
+      let details = err.response?.data?.details;
+      if (typeof details === 'object') {
+        details = JSON.stringify(details, null, 2);
+      }
+      setOutput(details || 'Unknown error while running the code.');
       setActiveTab('Output');
     }
     finally {

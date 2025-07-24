@@ -24,7 +24,7 @@ dotenv.config();
 const port=process.env.PORT ;
 
 app.use(cors({
-    origin:["https://www.algonest.online","https://backend.algonest.online"],
+    origin:["http://localhost:8000",'https://backend.algonest.online'],
     credentials:true,
 }));
 
@@ -36,7 +36,13 @@ const __dirname = path.dirname(__filename);
 
 const outputPath=path.join(__dirname,"outputs");
 //run
-app.post('/run',authMiddleware,async(req,res)=>{
+app.post('/run',(req, res, next) => {
+  const token = req.headers['x-internal-token'];
+  if (token !== process.env.INTERNAL_SECRET) {
+    return res.status(401).json({ error: 'Unauthorized internal access' });
+  }
+  next();
+},async(req,res)=>{
   
     const {code,language='cpp',input}=req.body;
    if(code===undefined){
@@ -221,7 +227,13 @@ finally {
 
 //ai review
 
-app.post('/ai-review',authMiddleware,async(req,res)=>{
+app.post('/ai-review',(req, res, next) => {
+  const token = req.headers['x-internal-token'];
+  if (token !== process.env.INTERNAL_SECRET) {
+    return res.status(401).json({ error: 'Unauthorized internal access' });
+  }
+  next();
+},async(req,res)=>{
   const {code,title,description,constraints}=req.body;
   if (code === undefined) {
     return res.status(404).json({ success: false, error: "Empty code! Please provide some code to review" });
@@ -243,7 +255,13 @@ return res.status(500).json({ success: false, error: "Failed to get AI review re
 
 //code
 
-app.get('/code',authMiddleware, async (req, res) => {
+app.get('/code', (req, res, next) => {
+  const token = req.headers['x-internal-token'];
+  if (token !== process.env.INTERNAL_SECRET) {
+    return res.status(401).json({ error: 'Unauthorized internal access' });
+  }
+  next();
+},async (req, res) => {
   try {
     const relativePath = req.query.path;
 

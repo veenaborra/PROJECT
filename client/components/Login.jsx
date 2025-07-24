@@ -47,8 +47,9 @@ const Login = () => {
 
       navigate(from, { replace: true })
     }catch (error) {
+      console.error(error);
       if (error.response) {
-
+console.log(error);
         const msg = error.response.data.message;
     
         if (msg === 'Invalid password' || msg === 'invalid credentials') {

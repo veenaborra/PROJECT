@@ -67,7 +67,7 @@ function App() {
           } 
         />
         <Route 
-          path="/:id" 
+          path="/problems/:id" 
           element={
           
               <SpecificProblem />

@@ -16,8 +16,8 @@ export default async function fetchSubmittedCode(submissionId) {
     }
 
     // 2. Fetch code from compiler server
-    const codeRes = await compiler.get(
-      `/code?path=${encodeURIComponent(filePath)}`
+    const codeRes = await backend.get(
+      `/compiler/code?path=${encodeURIComponent(filePath)}`
     );
 
     return codeRes.data.code || "// Submitted code not found.";

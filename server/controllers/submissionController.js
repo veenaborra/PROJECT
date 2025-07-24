@@ -4,6 +4,8 @@ import Submission from "../models/submissionModel.js";
 import User from "../models/userModel.js";
 import axios from 'axios';
 
+const COMPILER_URL = process.env.COMPILER_URL; 
+
 export const Submit = async (req, res) => {
   const { code, language, problemId } = req.body;
   const { userId } = req.user;
@@ -28,7 +30,7 @@ export const Submit = async (req, res) => {
     // Try compiler execution
     try {
       const compilerRes = await axios.post(
-        'https://compiler.algonest.online/submit',
+        `${COMPILER_URL}/submit`,
         { code, language, testcases },
         {
           headers: { 'x-internal-token': process.env.INTERNAL_SECRET },

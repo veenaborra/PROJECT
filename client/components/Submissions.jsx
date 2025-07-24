@@ -14,7 +14,7 @@ export default function Submissions() {
   useEffect(() => {
     const fetchSubmissions = async () => {
       try {
-        const res = await backend.get('/submissions');
+        const res = await backend.get('/submissions/usersubmission');
         
         setSubmissions(res.data.submissions || []);
       } catch (err) {
@@ -54,7 +54,7 @@ export default function Submissions() {
   {submissions.map((s) => (
     <tr
       key={s._id}
-      onClick={() => navigate(`/${s.problemId}?submission=${s._id}`)}
+      onClick={() => navigate(`/problems/${s.problemId}?submission=${s._id}`)}
       className={`cursor-pointer transition-colors duration-200 ${
         s.status === 'Accepted' ? 'bg-green-50 hover:bg-green-100' : 'bg-red-50 hover:bg-red-100'
       }`}

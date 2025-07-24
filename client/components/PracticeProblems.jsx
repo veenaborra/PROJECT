@@ -13,7 +13,7 @@ const navigate=useNavigate();
 
 
 const handleRowClick=(id)=>{
-navigate(`/${id}`);
+navigate(`/problems/${id}`);
 }
 
 const filteredProblems = problems.filter((problem) =>

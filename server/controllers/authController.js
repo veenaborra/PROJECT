@@ -65,16 +65,18 @@ const token=jwt.sign({
     role:user.role
 },JWT_SECRET,{expiresIn:"1d"});
 
-res.cookie('token',token,{
+res.cookie('token', token, {
     httpOnly: true,
-    secure: false,
-    sameSite: "Lax",
+    secure: false, // only true in production with HTTPS
+    sameSite: "Lax", // or "Strict" for localhost
+    // domain: not set for localhost
     maxAge: 24 * 60 * 60 * 1000  
 })
 res.status(200).json({ message: "Login successful ",userId:user._id,role:user.role});
 }
 
 catch(error){
+    console.log(error);
     res.status(500).json({message:"something went wrong",error:error.message})
 }
 };
@@ -83,6 +85,7 @@ export const logOut=(req,res)=>{
     res.clearCookie("token",{
         httpOnly:true,
         secure:false,
+        // domain: '.algonest.online',
         sameSite:"Lax"
     })
     res.status(200).json({ message: "Logged out successfully" });

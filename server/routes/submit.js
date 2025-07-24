@@ -10,14 +10,14 @@ import { getAllSubmissions } from '../controllers/submissionController.js';
 const submitRouter=express.Router();
 
 submitRouter.post('/submit',authMiddleware,Submit);
-submitRouter.get('/submissions/count',authMiddleware,getSubmissionCount);
+submitRouter.get('/count',authMiddleware,getSubmissionCount);
 
-submitRouter.get('/submissions',authMiddleware,UserSubmissions)
+submitRouter.get('/usersubmission',authMiddleware,UserSubmissions)
+
+submitRouter.get('/all', authMiddleware, getAllSubmissions);
+submitRouter.get('/:id',authMiddleware,specificSubmission);
 
 
-submitRouter.get('/submissions/:id',authMiddleware,specificSubmission);
-
-submitRouter.get('/allsubmissions', authMiddleware, getAllSubmissions);
 
 
 

@@ -13,7 +13,7 @@ export default function AllSubmissions() {
   useEffect(() => {
     const fetchSubmissions = async () => {
       try {
-        const res = await backend.get('/allsubmissions', {
+        const res = await backend.get('/submissions/all', {
           withCredentials: true,
         });
         setSubmissions(res.data);
