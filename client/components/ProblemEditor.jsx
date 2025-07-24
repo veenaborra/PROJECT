@@ -130,7 +130,7 @@ export default function ProblemEditor({ problem ,submissionId}) {
   
     try {
       const res = await backend.post(
-        '/submit',
+        '/submissions/submit',
         {
           code,
           language,
