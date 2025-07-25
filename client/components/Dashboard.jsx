@@ -46,7 +46,7 @@ export default function Dashboard() {
   }, [id]);
   
 
-  const handleRowClick = (id) => navigate(`/${id}`);
+  const handleRowClick = (id) => navigate(`/problems/${id}`);
 
   const renderGuestTable = () => (
     <>
