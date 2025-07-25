@@ -32,6 +32,16 @@ const app=express();
  app.use('/api/problems',problemsRouter);
  app.use('/api/compiler',compilerRouter);
  app.use('/api/submissions',submitRouter);
+ app.get('/api/test-compiler', async (req, res) => {
+    try {
+      const r = await fetch("https://compiler.algonest.online");
+      const t = await r.text();
+      res.send(t);
+    } catch (e) {
+      res.status(500).send("Fetch failed: " + e.message);
+    }
+  });
+  
 //  app.use( (req, res,next) => {
 //      if (req.method === 'GET' && !req.path.startsWith('/api')) {
 //          res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'));
